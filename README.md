@@ -32,6 +32,11 @@
 </div>
 </div>
 
+> **Fork academico** -- Curso de Pruebas de Software, Sprint 1.
+> Repositorio original: [Snouzy/workout-cool](https://github.com/Snouzy/workout-cool)
+> 
+> Documentacion del proyecto: [GitHub Pages](https://czrich.github.io/workout-cool/) | Plan de pruebas: [Wiki](https://github.com/CZrich/workout-cool/wiki) | Tablero Kanban: [Projects](https://github.com/users/CZrich/projects/3)
+
 ## Table of Contents
 
 - [About](#about)
