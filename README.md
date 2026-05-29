@@ -1,5 +1,7 @@
 <div align="center">
-<img src="public/logo.png" alt="Workout.cool Logo" width="120" height="120">
+<img src="public/logo.png" alt="Workout.cool Logo" width="100" height="100">
+<span style="font-size: 28px; margin: 0 15px;">for</span>
+<img src="public/tabano.png" alt="Tabano Logo" width="100" height="100">
 <h1>Workout.cool</h1>
 <h3><em>Modern fitness coaching platform with comprehensive exercise database</em></h3>
 <div>
