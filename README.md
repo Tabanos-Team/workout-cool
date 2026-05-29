@@ -1,9 +1,20 @@
-<img width="225" height="225" alt="image" src="https://github.com/user-attachments/assets/9a5a5b2b-6317-4fd6-a24f-868754183e8c" /><div align="center">
-<img src="public/logo.png" alt="Workout.cool Logo" width="100" height="100">
-<span style="font-size: 28px; margin: 0 15px;">for</span>
-<img src="<img width="225" height="225" alt="image" src="https://github.com/user-attachments/assets/5e1a7603-a014-496d-b343-a3ea6acd5617" />
-" alt="Tabano Logo" width="100" height="100">
-<h1>Workout.cool</h1>
+<div align="center">
+  <h1>Workout.cool / Tester for Tabanos Team</h1>
+<p align="center">
+  <img src="public/logo.png" alt="Tester Logo" width="100" height="100" /><br>
+
+  <span style="font-size:28px; margin:0 15px;">
+    for
+  </span>
+
+  <img src="https://github.com/user-attachments/assets/5e1a7603-a014-496d-b343-a3ea6acd5617"
+       alt="Tabanos Logo"
+       width="100"
+       height="100" />
+</p>
+
+</div>
+
 <h3><em>Modern fitness coaching platform with comprehensive exercise database</em></h3>
 <div>
   <a href="https://github.com/Snouzy/workout-cool/graphs/contributors"><img src="https://img.shields.io/github/contributors/Snouzy/workout-cool?style=plastic" alt="Contributors"></a>
