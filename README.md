@@ -1,7 +1,8 @@
-<div align="center">
+<img width="225" height="225" alt="image" src="https://github.com/user-attachments/assets/9a5a5b2b-6317-4fd6-a24f-868754183e8c" /><div align="center">
 <img src="public/logo.png" alt="Workout.cool Logo" width="100" height="100">
 <span style="font-size: 28px; margin: 0 15px;">for</span>
-<img src="public/tabano.png" alt="Tabano Logo" width="100" height="100">
+<img src="<img width="225" height="225" alt="image" src="https://github.com/user-attachments/assets/5e1a7603-a014-496d-b343-a3ea6acd5617" />
+" alt="Tabano Logo" width="100" height="100">
 <h1>Workout.cool</h1>
 <h3><em>Modern fitness coaching platform with comprehensive exercise database</em></h3>
 <div>
