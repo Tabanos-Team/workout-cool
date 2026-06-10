@@ -18,7 +18,8 @@
     "db:seed-workout-advanced": "tsx scripts/seed-workout-data-advanced.ts",
     "lint:fix": "next lint --fix",
     "db:seed-leaderboard": "tsx scripts/seed-leaderboard-data.ts",
-    "migrate:prod": "env-cmd -f .env.production prisma migrate deploy"
+    "migrate:prod": "env-cmd -f .env.production prisma migrate deploy",
+    "test:coverage": "vitest run --coverage"
   },
   "resolutions": {
     "prettier": "^3.4.2"
@@ -124,6 +125,7 @@
     "@types/react-dom": "^19",
     "@typescript-eslint/eslint-plugin": "^8.29.0",
     "@typescript-eslint/parser": "^8.29.0",
+    "@vitest/coverage-v8": "^4.1.8",
     "autoprefixer": "^10.4.21",
     "env-cmd": "^10.1.0",
     "eslint": "^9.23.0",
@@ -143,6 +145,7 @@
     "tslog": "^4.9.3",
     "tsx": "^4.19.4",
     "typescript": "^5",
-    "typescript-eslint": "^8.29.0"
+    "typescript-eslint": "^8.29.0",
+    "vitest": "^4.1.8"
   }
 }
