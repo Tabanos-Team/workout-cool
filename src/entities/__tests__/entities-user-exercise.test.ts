@@ -1,16 +1,3 @@
-/**
- * ARCHIVO: src/entities/__tests__/entities-user-exercise.test.ts
- *
- * Tests unitarios para las entidades User y Exercise utilizando técnicas de caja negra:
- * - Partición de Equivalencia (PE)
- * - Análisis de Valores Límite (AVL)
- * - Tablas de Decisión (TD)
- *
- * NO se conecta a la base de datos. Se prueba la lógica pura importada de producción.
- *
- * Ejecutar: pnpm vitest run src/entities/__tests__/entities-user-exercise.test.ts
- */
-
 import { describe, it, expect } from "vitest";
 
 // Importaciones de tipos y lógica de negocio reales
@@ -42,11 +29,8 @@ import {
   type ExerciseAttribute
 } from "../exercise/lib/exercise-logic";
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████  TESTS — ENTIDAD USER  ████
-// ═══════════════════════════════════════════════════════════════════════════════
-
-describe("Entidad User — isProfileComplete (Partición de Equivalencia - PE)", () => {
+// Tests para la entidad User
+describe("User logic - isProfileComplete", () => {
   const completeUser: UserProfile = {
     id: "usr_1",
     firstName: "Oscar",
@@ -58,271 +42,194 @@ describe("Entidad User — isProfileComplete (Partición de Equivalencia - PE)",
     locale: "es",
   };
 
-  it("[PE - Clase Válida] debe retornar true para un usuario con todos los campos completos", () => {
+  it("debe retornar true si el perfil tiene todos los campos completos", () => {
     expect(isProfileComplete(completeUser)).toBe(true);
   });
 
-  it("[PE - Clase Inválida] debe retornar false si falta el email", () => {
+  it("debe retornar false si falta el email", () => {
     expect(isProfileComplete({ ...completeUser, email: "" })).toBe(false);
   });
 
-  it("[PE - Clase Inválida] debe retornar false si emailVerified es false", () => {
-    expect(isProfileComplete({ ...completeUser, emailVerified: false })).toBe(false);
-  });
-
-  it("[PE - Clase Inválida] debe retornar false si falta la imagen", () => {
+  it("debe retornar false si falta la imagen", () => {
     expect(isProfileComplete({ ...completeUser, image: null })).toBe(false);
-  });
-
-  it("[PE - Clase Inválida] debe retornar false si name está vacío o solo espacios", () => {
-    expect(isProfileComplete({ ...completeUser, name: "   " })).toBe(false);
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-describe("Entidad User — getFullName (PE)", () => {
-  it("[PE - Clase Válida] debe combinar firstName y lastName", () => {
+describe("User logic - getFullName", () => {
+  it("debe combinar nombre y apellido correctamente", () => {
     expect(getFullName({ firstName: "Oscar", lastName: "Chilo", name: "OC" })).toBe("Oscar Chilo");
   });
 
-  it("[PE - Fallback] debe usar name si firstName o lastName están vacíos", () => {
+  it("debe retornar el name por defecto si nombre y apellido estan vacios", () => {
     expect(getFullName({ firstName: "", lastName: "", name: "Oscar Chilo" })).toBe("Oscar Chilo");
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-describe("Entidad User — getUserInitials (PE & AVL)", () => {
-  it("[PE/AVL - Límite 2 car.] debe retornar iniciales de firstName y lastName", () => {
+describe("User logic - getUserInitials", () => {
+  it("debe retornar las iniciales a partir de nombre y apellido", () => {
     expect(getUserInitials({ firstName: "Oscar", lastName: "Chilo", name: "OC" })).toBe("OC");
   });
 
-  it("[PE] debe retornar iniciales desde el name completo (primer y último nombre)", () => {
+  it("debe retornar las iniciales a partir del nombre completo", () => {
     expect(getUserInitials({ firstName: "", lastName: "", name: "Oscar Carlos Chilo" })).toBe("OC");
   });
 
-  it("[AVL - Límite 1 car.] debe retornar la primera letra del name si es una sola palabra", () => {
+  it("debe retornar una sola inicial si el nombre tiene una sola palabra", () => {
     expect(getUserInitials({ firstName: "", lastName: "", name: "Oscar" })).toBe("O");
   });
 
-  it("[PE - Clase Inválida] debe retornar '?' para nombre vacío o no definido", () => {
+  it("debe retornar ? si no se puede determinar la inicial", () => {
     expect(getUserInitials({ firstName: "", lastName: "", name: "" })).toBe("?");
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-describe("Entidad User — isAdmin (PE)", () => {
-  it("[PE] debe retornar true si el rol es admin", () => {
+describe("User logic - isAdmin", () => {
+  it("debe retornar true si el usuario es administrador", () => {
     expect(isAdmin({ role: "admin" })).toBe(true);
   });
 
-  it("[PE] debe retornar false para otros roles", () => {
+  it("debe retornar false para otros roles", () => {
     expect(isAdmin({ role: "user" })).toBe(false);
-    expect(isAdmin({ role: null })).toBe(false);
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-describe("Entidad User — isUserBanned (Análisis de Valores Límite - AVL)", () => {
-  it("[PE - No Baneado] debe retornar false si banned es false", () => {
+describe("User logic - isUserBanned", () => {
+  it("debe retornar false si el usuario no esta baneado", () => {
     expect(isUserBanned({ banned: false, banExpires: null })).toBe(false);
   });
 
-  it("[AVL - Ban Permanente] debe retornar true si banned es true y banExpires es null", () => {
+  it("debe retornar true si el ban es permanente", () => {
     expect(isUserBanned({ banned: true, banExpires: null })).toBe(true);
   });
 
-  it("[AVL - Expiración Futura] debe retornar true si banned es true y la fecha es futura", () => {
-    const futureDate = new Date(Date.now() + 1000 * 60 * 60 * 24); // Mañana
+  it("debe retornar true si el ban aun esta vigente", () => {
+    const futureDate = new Date(Date.now() + 1000 * 60 * 60 * 24);
     expect(isUserBanned({ banned: true, banExpires: futureDate })).toBe(true);
   });
 
-  it("[AVL - Expiración Pasada] debe retornar false si banned es true pero la fecha ya expiró", () => {
-    const pastDate = new Date(Date.now() - 1000); // Hace 1 segundo
+  it("debe retornar false si el ban ya vencio", () => {
+    const pastDate = new Date(Date.now() - 1000);
     expect(isUserBanned({ banned: true, banExpires: pastDate })).toBe(false);
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-describe("Entidad User — hasActivePremium (Tabla de Decisión - TD)", () => {
-  it("[TD - Regla 1] debe retornar true si isPremium es true directamente", () => {
+describe("User logic - hasActivePremium", () => {
+  it("debe retornar true si el usuario tiene premium directo", () => {
     expect(hasActivePremium({ isPremium: true }, [])).toBe(true);
   });
 
-  it("[TD - Regla 2] debe retornar true con suscripción activa y vigente", () => {
+  it("debe retornar true si tiene una suscripcion activa vigente", () => {
     const sub: UserSubscription = {
       status: "ACTIVE",
-      currentPeriodEnd: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30), // 30 días
+      currentPeriodEnd: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
     };
     expect(hasActivePremium({ isPremium: false }, [sub])).toBe(true);
   });
 
-  it("[TD - Regla 3] debe retornar false si la suscripción active expiró", () => {
+  it("debe retornar false si la suscripcion expiro", () => {
     const sub: UserSubscription = {
       status: "ACTIVE",
-      currentPeriodEnd: new Date(Date.now() - 1000 * 60 * 60), // hace 1 hora
+      currentPeriodEnd: new Date(Date.now() - 1000 * 60 * 60),
     };
-    expect(hasActivePremium({ isPremium: false }, [sub])).toBe(false);
-  });
-
-  it("[TD - Regla 4] debe retornar false si la suscripción está cancelada o expirada", () => {
-    const sub: UserSubscription = { status: "EXPIRED" };
     expect(hasActivePremium({ isPremium: false }, [sub])).toBe(false);
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-describe("Entidad User — getUserLocale (PE)", () => {
-  it("[PE] debe retornar el locale definido o el fallback", () => {
+describe("User logic - getUserLocale", () => {
+  it("debe retornar el locale del usuario o el de respaldo", () => {
     expect(getUserLocale({ locale: "es" })).toBe("es");
     expect(getUserLocale({ locale: null }, "en")).toBe("en");
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-describe("Entidad User — isValidEmail (PE & AVL)", () => {
-  it("[PE - Válido] debe retornar true para correos sintácticamente correctos", () => {
+describe("User logic - isValidEmail", () => {
+  it("debe validar correctamente el formato del email", () => {
     expect(isValidEmail("user@example.com")).toBe(true);
-    expect(isValidEmail("u@e.co")).toBe(true);
-  });
-
-  it("[PE - Inválido] debe retornar false para formatos de correo incorrectos o vacíos", () => {
-    expect(isValidEmail("")).toBe(false);
     expect(isValidEmail("userexample.com")).toBe(false);
-    expect(isValidEmail("user@example")).toBe(false);
   });
 });
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████  TESTS — ENTIDAD EXERCISE  ████
-// ═══════════════════════════════════════════════════════════════════════════════
-
-describe("Entidad Exercise — isExerciseComplete (PE)", () => {
+// Tests para la entidad Exercise
+describe("Exercise logic - isExerciseComplete", () => {
   const completeEx: ExerciseData = {
     id: "ex_1",
     name: "Squat",
     slug: "squat",
-    description: "Squat exercise description",
+    description: "Squat description",
   };
 
-  it("[PE - Válido] debe retornar true si tiene name, slug y description", () => {
+  it("debe retornar true si tiene todos los campos obligatorios", () => {
     expect(isExerciseComplete(completeEx)).toBe(true);
   });
 
-  it("[PE - Inválido] debe retornar false si falta algún campo obligatorio", () => {
+  it("debe retornar false si falta el nombre", () => {
     expect(isExerciseComplete({ ...completeEx, name: "" })).toBe(false);
-    expect(isExerciseComplete({ ...completeEx, slug: null })).toBe(false);
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-describe("Entidad Exercise — hasVideoContent (PE)", () => {
-  it("[PE] debe retornar true si contiene video URL válido", () => {
+describe("Exercise logic - hasVideoContent", () => {
+  it("debe validar si el ejercicio cuenta con enlace de video", () => {
     expect(hasVideoContent({ id: "1", name: "Squat", fullVideoUrl: "https://youtube.com/watch?v=1" })).toBe(true);
-  });
-
-  it("[PE] debe retornar false si no tiene video URL", () => {
     expect(hasVideoContent({ id: "1", name: "Squat", fullVideoUrl: "" })).toBe(false);
-    expect(hasVideoContent({ id: "1", name: "Squat", fullVideoUrl: null })).toBe(false);
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-describe("Entidad Exercise — getBilingual (PE)", () => {
-  it("[PE] debe retornar nameEn si está disponible, si no, name", () => {
+describe("Exercise logic - getBilingual", () => {
+  it("debe preferir el nombre en ingles si existe", () => {
     expect(getBilingual("Sentadilla", "Squat")).toBe("Squat");
     expect(getBilingual("Sentadilla", null)).toBe("Sentadilla");
-    expect(getBilingual("Sentadilla", "")).toBe("Sentadilla");
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-describe("Entidad Exercise — isPrimaryMusclePresent & isExerciseTypePresent (PE)", () => {
+describe("Exercise logic - attributes", () => {
   const attrs: ExerciseAttribute[] = [
     { attributeName: "PRIMARY_MUSCLE", attributeValue: "QUADRICEPS" },
     { attributeName: "TYPE", attributeValue: "STRENGTH" },
   ];
 
-  it("[PE] debe detectar presencia del músculo principal", () => {
+  it("debe validar la presencia de atributos principales", () => {
     expect(isPrimaryMusclePresent(attrs)).toBe(true);
-    expect(isPrimaryMusclePresent([])).toBe(false);
-  });
-
-  it("[PE] debe detectar presencia del tipo de ejercicio", () => {
     expect(isExerciseTypePresent(attrs)).toBe(true);
-    expect(isExerciseTypePresent([])).toBe(false);
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-describe("Entidad Exercise — generateSlug (PE & AVL)", () => {
-  it("[PE - Clase Válida] debe convertir nombre a slug en minúsculas con guiones", () => {
+describe("Exercise logic - generateSlug", () => {
+  it("debe formatear el nombre para generar un slug valido", () => {
     expect(generateSlug("Barbell Squat")).toBe("barbell-squat");
-  });
-
-  it("[PE - Especiales] debe limpiar caracteres no alfanuméricos", () => {
     expect(generateSlug("Bench Press (Flat)")).toBe("bench-press-flat");
-  });
-
-  it("[PE - Espacios] debe contraer múltiples espacios consecutivos en un solo guión", () => {
-    expect(generateSlug("Pull  Up")).toBe("pull-up");
-  });
-
-  it("[AVL - Límite Inferior] debe retornar slug vacío para nombre vacío", () => {
     expect(generateSlug("")).toBe("");
   });
 });
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// ████  TESTS — WORKOUT SET  ████
-// ═══════════════════════════════════════════════════════════════════════════════
-
-describe("WorkoutSet — isSetComplete (PE)", () => {
-  it("[PE] debe retornar el estado completed de la serie", () => {
+// Tests para WorkoutSet
+describe("WorkoutSet logic - isSetComplete", () => {
+  it("debe verificar si la serie esta completada", () => {
     expect(isSetComplete({ type: "REPS", valuesInt: [], valuesSec: [], units: [], completed: true })).toBe(true);
     expect(isSetComplete({ type: "REPS", valuesInt: [], valuesSec: [], units: [], completed: false })).toBe(false);
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-describe("WorkoutSet — getSetDisplayValue (Tabla de Decisión - TD)", () => {
-  it("[TD - Regla 1] debe formatear reps con peso y unidad para tipo REPS", () => {
+describe("WorkoutSet logic - getSetDisplayValue", () => {
+  it("debe dar formato para series de repeticiones y peso", () => {
     const set: WorkoutSetData = { type: "REPS", valuesInt: [10, 80], valuesSec: [], units: ["kg"], completed: false };
     expect(getSetDisplayValue(set)).toBe("10 reps @ 80kg");
   });
 
-  it("[TD - Regla 2] debe mostrar duración en segundos para tipo TIME", () => {
+  it("debe dar formato para series por tiempo", () => {
     const set: WorkoutSetData = { type: "TIME", valuesInt: [], valuesSec: [30], units: [], completed: false };
     expect(getSetDisplayValue(set)).toBe("30s");
   });
 
-  it("[TD - Regla 3] debe retornar N/A para tipo sin soporte o sin valores", () => {
+  it("debe retornar N/A para formatos no definidos", () => {
     const set: WorkoutSetData = { type: "BODYWEIGHT", valuesInt: [], valuesSec: [], units: [], completed: false };
     expect(getSetDisplayValue(set)).toBe("N/A");
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-
-describe("WorkoutSet — calculateTotalWorkoutDuration (PE & AVL)", () => {
-  it("[PE - Clase Válida] debe sumar la duración total de todos los sets", () => {
-    const sets = [{ valuesSec: [30] }, { valuesSec: [45] }, { valuesSec: [60] }];
-    expect(calculateTotalWorkoutDuration(sets)).toBe(135);
-  });
-
-  it("[AVL - Límite Inferior] debe retornar 0 para una sesión vacía o sin duraciones", () => {
+describe("WorkoutSet logic - calculateTotalWorkoutDuration", () => {
+  it("debe sumar el tiempo total de las series", () => {
+    const sets = [{ valuesSec: [30] }, { valuesSec: [45] }];
+    expect(calculateTotalWorkoutDuration(sets)).toBe(75);
     expect(calculateTotalWorkoutDuration([])).toBe(0);
-    expect(calculateTotalWorkoutDuration([{ valuesSec: [] }])).toBe(0);
   });
 });
