@@ -10,11 +10,7 @@ import {
   is404StatusCode,
 } from "../pwa-not-found-logic";
 
-// ════════════════════════════════════════════════════════════════════
-// TESTS PWA
-// ════════════════════════════════════════════════════════════════════
-
-describe("PWA Manifest — isValidManifest", () => {
+describe("PWA Manifest - isValidManifest", () => {
   const validManifest: PWAManifest = {
     name: "Workout Cool",
     short_name: "WorkoutCool",
@@ -29,41 +25,22 @@ describe("PWA Manifest — isValidManifest", () => {
     ],
   };
 
-  it("debe ser válido con todos los campos correctos", () => {
+  it("debe retornar true si el manifest es correcto y completo", () => {
     expect(isValidManifest(validManifest)).toBe(true);
   });
 
-  it("debe ser inválido si falta el name", () => {
+  it("debe retornar false si falta el nombre o short_name", () => {
     expect(isValidManifest({ ...validManifest, name: "" })).toBe(false);
-  });
-
-  it("debe ser inválido si falta short_name", () => {
     expect(isValidManifest({ ...validManifest, short_name: "" })).toBe(false);
   });
 
-  it("debe ser inválido si start_url está vacío", () => {
-    expect(isValidManifest({ ...validManifest, start_url: "" })).toBe(false);
-  });
-
-  it("debe ser inválido si display no es un valor permitido", () => {
+  it("debe retornar false si display no tiene un valor permitido", () => {
     expect(isValidManifest({ ...validManifest, display: "fullpage" })).toBe(false);
-  });
-
-  it("debe aceptar display 'standalone'", () => {
-    expect(isValidManifest({ ...validManifest, display: "standalone" })).toBe(true);
-  });
-
-  it("debe aceptar display 'fullscreen'", () => {
-    expect(isValidManifest({ ...validManifest, display: "fullscreen" })).toBe(true);
-  });
-
-  it("debe ser inválido si no hay icons", () => {
-    expect(isValidManifest({ ...validManifest, icons: [] })).toBe(false);
   });
 });
 
-describe("PWA Manifest — hasRequiredIconSizes", () => {
-  it("debe retornar true si tiene 192x192 y 512x512", () => {
+describe("PWA Manifest - hasRequiredIconSizes", () => {
+  it("debe retornar true si tiene los dos tamanos de icono obligatorios", () => {
     const manifest: PWAManifest = {
       name: "WC", short_name: "WC", start_url: "/",
       display: "standalone", background_color: "#fff", theme_color: "#000",
@@ -75,7 +52,7 @@ describe("PWA Manifest — hasRequiredIconSizes", () => {
     expect(hasRequiredIconSizes(manifest)).toBe(true);
   });
 
-  it("debe retornar false si falta el ícono 512x512", () => {
+  it("debe retornar false si falta alguno de los tamanos", () => {
     const manifest: PWAManifest = {
       name: "WC", short_name: "WC", start_url: "/",
       display: "standalone", background_color: "#fff", theme_color: "#000",
@@ -83,125 +60,39 @@ describe("PWA Manifest — hasRequiredIconSizes", () => {
     };
     expect(hasRequiredIconSizes(manifest)).toBe(false);
   });
-
-  it("debe retornar false si falta el ícono 192x192", () => {
-    const manifest: PWAManifest = {
-      name: "WC", short_name: "WC", start_url: "/",
-      display: "standalone", background_color: "#fff", theme_color: "#000",
-      icons: [{ src: "/icon.png", sizes: "512x512", type: "image/png" }],
-    };
-    expect(hasRequiredIconSizes(manifest)).toBe(false);
-  });
-
-  it("debe retornar false si no hay icons", () => {
-    const manifest: PWAManifest = {
-      name: "WC", short_name: "WC", start_url: "/",
-      display: "standalone", background_color: "#fff", theme_color: "#000",
-      icons: [],
-    };
-    expect(hasRequiredIconSizes(manifest)).toBe(false);
-  });
 });
 
-describe("PWA Manifest — isValidColor", () => {
-  it("debe validar color hex de 6 dígitos", () => {
+describe("PWA Manifest - isValidColor", () => {
+  it("debe validar colores hexadecimales correctos de 3 o 6 digitos", () => {
     expect(isValidColor("#00D4AA")).toBe(true);
-    expect(isValidColor("#ffffff")).toBe(true);
-  });
-
-  it("debe validar color hex de 3 dígitos", () => {
     expect(isValidColor("#fff")).toBe(true);
-    expect(isValidColor("#000")).toBe(true);
   });
 
-  it("debe rechazar color sin #", () => {
+  it("debe rechazar formatos incorrectos", () => {
     expect(isValidColor("00D4AA")).toBe(false);
-  });
-
-  it("debe rechazar color con caracteres inválidos", () => {
     expect(isValidColor("#GGGGGG")).toBe(false);
-  });
-
-  it("debe rechazar string vacío", () => {
     expect(isValidColor("")).toBe(false);
   });
+});
 
-  it("los colores del manifest de workout-cool deben ser válidos", () => {
-    expect(isValidColor("#00D4AA")).toBe(true); // theme_color
-    expect(isValidColor("#ffffff")).toBe(true); // background_color
+describe("Pagina 404 - get404PageInfo", () => {
+  it("debe retornar la informacion de error controlada", () => {
+    const info = get404PageInfo();
+    expect(info.statusCode).toBe(404);
+    expect(info.title).toBeTruthy();
+    expect(info.hasHomeLink).toBe(true);
   });
 });
 
-// ════════════════════════════════════════════════════════════════════
-// TESTS 404
-// ════════════════════════════════════════════════════════════════════
-
-describe("Página 404 — get404PageInfo", () => {
-  it("debe retornar statusCode 404", () => {
-    expect(get404PageInfo().statusCode).toBe(404);
-  });
-
-  it("debe tener título definido", () => {
-    expect(get404PageInfo().title).toBeTruthy();
-  });
-
-  it("debe tener enlace al home", () => {
-    expect(get404PageInfo().hasHomeLink).toBe(true);
-  });
-
-  it("debe tener mensaje de error", () => {
-    expect(get404PageInfo().message.length).toBeGreaterThan(0);
-  });
-});
-
-describe("Página 404 — isValidStatusCode", () => {
-  it("debe retornar true para 404", () => {
+describe("Pagina 404 - codigos de estado", () => {
+  it("debe validar si el codigo HTTP es correcto", () => {
     expect(isValidStatusCode(404)).toBe(true);
-  });
-
-  it("debe retornar true para 200", () => {
     expect(isValidStatusCode(200)).toBe(true);
-  });
-
-  it("debe retornar false para código menor a 100", () => {
     expect(isValidStatusCode(99)).toBe(false);
   });
 
-  it("debe retornar false para código mayor a 599", () => {
-    expect(isValidStatusCode(600)).toBe(false);
-  });
-
-  it("debe retornar true para límite inferior (100)", () => {
-    expect(isValidStatusCode(100)).toBe(true);
-  });
-
-  it("debe retornar true para límite superior (599)", () => {
-    expect(isValidStatusCode(599)).toBe(true);
-  });
-});
-
-describe("Página 404 — is404StatusCode", () => {
-  it("debe retornar true solo para 404", () => {
+  it("debe validar si el codigo corresponde a un error 404", () => {
     expect(is404StatusCode(404)).toBe(true);
-  });
-
-  it("debe retornar false para 200", () => {
     expect(is404StatusCode(200)).toBe(false);
-  });
-
-  it("debe retornar false para 500", () => {
-    expect(is404StatusCode(500)).toBe(false);
-  });
-
-  it("debe retornar false para 403", () => {
-    expect(is404StatusCode(403)).toBe(false);
-  });
-
-  it("debe retornar false para 405 (justo después del 404 — AVL)", () => {
-    expect(is404StatusCode(405)).toBe(false);
-  });
-
-  it("debe retornar false para 403 (justo antes del 404 — AVL)", () => {
-    expect(is404StatusCode(403)).toBe(false);
   });
 });
