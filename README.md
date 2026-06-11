@@ -14,7 +14,6 @@
 </p>
 
 </div>
-
 <h3><em>Modern fitness coaching platform with comprehensive exercise database</em></h3>
 <div>
   <a href="https://github.com/Snouzy/workout-cool/graphs/contributors"><img src="https://img.shields.io/github/contributors/Snouzy/workout-cool?style=plastic" alt="Contributors"></a>
@@ -50,7 +49,6 @@
 > Repositorio original: [Snouzy/workout-cool](https://github.com/Snouzy/workout-cool)
 > 
 > Documentacion del proyecto: [GitHub Pages](https://czrich.github.io/workout-cool/) | Plan de pruebas: [Wiki](https://github.com/CZrich/workout-cool/wiki) | Tablero Kanban: [Projects](https://github.com/users/CZrich/projects/3)
-
 ## Table of Contents
 
 - [About](#about)
