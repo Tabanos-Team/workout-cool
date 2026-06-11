@@ -66,7 +66,7 @@ describe('Componente Breadcrumbs', () => {
     
     // El primer svg debería ser el de Home (dentro del primer link)
     const primerSvg = svgs[0];
-    expect(primerSvg).toHaveClass('lucide-home');
+    expect(primerSvg).toHaveClass('lucide-house');
   });
 
   it('debería tener accesibilidad de navegación apropiada', () => {

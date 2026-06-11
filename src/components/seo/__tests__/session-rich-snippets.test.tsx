@@ -1,10 +1,24 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { SessionRichSnippets } from '../session-rich-snippets';
 
-// Mock de useI18n
+// Mock de lucide-react - debe ir primero
+vi.mock('lucide-react', () => ({
+  Clock: ({ size, ...props }: any) => <svg data-testid="clock-icon" width={size} height={size} {...props} />,
+  Dumbbell: ({ size, ...props }: any) => <svg data-testid="dumbbell-icon" width={size} height={size} {...props} />,
+  Timer: ({ size, ...props }: any) => <svg data-testid="timer-icon" width={size} height={size} {...props} />,
+}));
+
+// Mock de useI18n - con una implementación por defecto que funcione
+const mockT = vi.fn((key: string, options?: any) => {
+  if (key === 'programs.min_short') return 'min';
+  if (key === 'programs.exercises') return 'ejercicios';
+  if (key === 'programs.set') return options?.count === 1 ? 'serie' : 'series';
+  return key;
+});
+
 vi.mock('locales/client', () => ({
-  useI18n: vi.fn(),
+  useI18n: vi.fn(() => mockT),
 }));
 
 import { useI18n } from 'locales/client';
@@ -12,18 +26,18 @@ import { useI18n } from 'locales/client';
 describe('Componente SessionRichSnippets', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    mockT.mockImplementation((key: string, options?: any) => {
+      if (key === 'programs.min_short') return 'min';
+      if (key === 'programs.exercises') return 'ejercicios';
+      if (key === 'programs.set') return options?.count === 1 ? 'serie' : 'series';
+      return key;
+    });
+
+    (useI18n as any).mockReturnValue(mockT);
   });
 
   it('debería renderizar la duración, número de ejercicios y total de series', () => {
-    (useI18n as any).mockReturnValue({
-      t: (key: string, options?: any) => {
-        if (key === 'programs.min_short') return 'min';
-        if (key === 'programs.exercises') return 'ejercicios';
-        if (key === 'programs.set') return options?.count === 1 ? 'serie' : 'series';
-        return key;
-      },
-    });
-
     render(<SessionRichSnippets duration={45} exerciseCount={8} totalSets={24} />);
 
     expect(screen.getByText(/45 min/)).toBeInTheDocument();
@@ -32,13 +46,11 @@ describe('Componente SessionRichSnippets', () => {
   });
 
   it('debería mostrar el texto singular para "serie" cuando totalSets es 1', () => {
-    (useI18n as any).mockReturnValue({
-      t: (key: string, options?: any) => {
-        if (key === 'programs.min_short') return 'min';
-        if (key === 'programs.exercises') return 'ejercicio';
-        if (key === 'programs.set') return options?.count === 1 ? 'serie' : 'series';
-        return key;
-      },
+    mockT.mockImplementation((key: string, options?: any) => {
+      if (key === 'programs.min_short') return 'min';
+      if (key === 'programs.exercises') return 'ejercicio';
+      if (key === 'programs.set') return options?.count === 1 ? 'serie' : 'series';
+      return key;
     });
 
     render(<SessionRichSnippets duration={30} exerciseCount={1} totalSets={1} />);
@@ -48,15 +60,6 @@ describe('Componente SessionRichSnippets', () => {
   });
 
   it('debería mostrar el texto plural para "series" cuando totalSets es mayor a 1', () => {
-    (useI18n as any).mockReturnValue({
-      t: (key: string, options?: any) => {
-        if (key === 'programs.min_short') return 'min';
-        if (key === 'programs.exercises') return 'ejercicios';
-        if (key === 'programs.set') return options?.count === 1 ? 'serie' : 'series';
-        return key;
-      },
-    });
-
     render(<SessionRichSnippets duration={45} exerciseCount={5} totalSets={15} />);
 
     expect(screen.getByText(/5 ejercicios/)).toBeInTheDocument();
@@ -64,69 +67,29 @@ describe('Componente SessionRichSnippets', () => {
   });
 
   it('debería mostrar el texto plural para "ejercicios" cuando exerciseCount es mayor a 1', () => {
-    (useI18n as any).mockReturnValue({
-      t: (key: string, options?: any) => {
-        if (key === 'programs.min_short') return 'min';
-        if (key === 'programs.exercises') return 'ejercicios';
-        if (key === 'programs.set') return options?.count === 1 ? 'serie' : 'series';
-        return key;
-      },
-    });
-
     render(<SessionRichSnippets duration={45} exerciseCount={3} totalSets={10} />);
 
     expect(screen.getByText(/3 ejercicios/)).toBeInTheDocument();
   });
 
   it('debería mostrar el prefijo "~" antes de la duración', () => {
-    (useI18n as any).mockReturnValue({
-      t: (key: string) => {
-        if (key === 'programs.min_short') return 'min';
-        if (key === 'programs.exercises') return 'ejercicios';
-        if (key === 'programs.set') return 'series';
-        return key;
-      },
-    });
-
     render(<SessionRichSnippets duration={60} exerciseCount={5} totalSets={20} />);
 
     expect(screen.getByText(/~60 min/)).toBeInTheDocument();
   });
 
   it('debería renderizar los tres íconos: Clock, Dumbbell y Timer', () => {
-    (useI18n as any).mockReturnValue({
-      t: (key: string) => {
-        if (key === 'programs.min_short') return 'min';
-        if (key === 'programs.exercises') return 'ejercicios';
-        if (key === 'programs.set') return 'series';
-        return key;
-      },
-    });
-
     const { container } = render(<SessionRichSnippets duration={45} exerciseCount={8} totalSets={24} />);
 
+    expect(screen.getByTestId('clock-icon')).toBeInTheDocument();
+    expect(screen.getByTestId('dumbbell-icon')).toBeInTheDocument();
+    expect(screen.getByTestId('timer-icon')).toBeInTheDocument();
+    
     const svgs = container.querySelectorAll('svg');
     expect(svgs).toHaveLength(3);
-    
-    const hasClock = Array.from(svgs).some(svg => svg.classList.contains('lucide-clock'));
-    const hasDumbbell = Array.from(svgs).some(svg => svg.classList.contains('lucide-dumbbell'));
-    const hasTimer = Array.from(svgs).some(svg => svg.classList.contains('lucide-timer'));
-    
-    expect(hasClock).toBe(true);
-    expect(hasDumbbell).toBe(true);
-    expect(hasTimer).toBe(true);
   });
 
   it('debería aceptar className personalizado', () => {
-    (useI18n as any).mockReturnValue({
-      t: (key: string) => {
-        if (key === 'programs.min_short') return 'min';
-        if (key === 'programs.exercises') return 'ejercicios';
-        if (key === 'programs.set') return 'series';
-        return key;
-      },
-    });
-
     const { container } = render(
       <SessionRichSnippets 
         duration={45} 
@@ -142,15 +105,6 @@ describe('Componente SessionRichSnippets', () => {
   });
 
   it('debería tener las clases CSS correctas por defecto', () => {
-    (useI18n as any).mockReturnValue({
-      t: (key: string) => {
-        if (key === 'programs.min_short') return 'min';
-        if (key === 'programs.exercises') return 'ejercicios';
-        if (key === 'programs.set') return 'series';
-        return key;
-      },
-    });
-
     const { container } = render(<SessionRichSnippets duration={45} exerciseCount={8} totalSets={24} />);
 
     const div = container.firstChild as HTMLElement;
@@ -159,15 +113,6 @@ describe('Componente SessionRichSnippets', () => {
   });
 
   it('debería renderizar datos estructurados ocultos para SEO', () => {
-    (useI18n as any).mockReturnValue({
-      t: (key: string) => {
-        if (key === 'programs.min_short') return 'min';
-        if (key === 'programs.exercises') return 'ejercicios';
-        if (key === 'programs.set') return 'series';
-        return key;
-      },
-    });
-
     const { container } = render(<SessionRichSnippets duration={45} exerciseCount={8} totalSets={24} />);
 
     const srOnly = container.querySelector('.sr-only');
@@ -187,15 +132,6 @@ describe('Componente SessionRichSnippets', () => {
   });
 
   it('debería manejar valores de duración cero', () => {
-    (useI18n as any).mockReturnValue({
-      t: (key: string) => {
-        if (key === 'programs.min_short') return 'min';
-        if (key === 'programs.exercises') return 'ejercicios';
-        if (key === 'programs.set') return 'series';
-        return key;
-      },
-    });
-
     render(<SessionRichSnippets duration={0} exerciseCount={0} totalSets={0} />);
 
     expect(screen.getByText(/~0 min/)).toBeInTheDocument();
@@ -204,15 +140,6 @@ describe('Componente SessionRichSnippets', () => {
   });
 
   it('debería manejar valores grandes sin errores', () => {
-    (useI18n as any).mockReturnValue({
-      t: (key: string) => {
-        if (key === 'programs.min_short') return 'min';
-        if (key === 'programs.exercises') return 'ejercicios';
-        if (key === 'programs.set') return 'series';
-        return key;
-      },
-    });
-
     render(<SessionRichSnippets duration={999} exerciseCount={999} totalSets={999} />);
 
     expect(screen.getByText(/~999 min/)).toBeInTheDocument();
@@ -221,36 +148,20 @@ describe('Componente SessionRichSnippets', () => {
   });
 
   it('debería tener el tamaño correcto en los íconos', () => {
-    (useI18n as any).mockReturnValue({
-      t: (key: string) => {
-        if (key === 'programs.min_short') return 'min';
-        if (key === 'programs.exercises') return 'ejercicios';
-        if (key === 'programs.set') return 'series';
-        return key;
-      },
-    });
+    render(<SessionRichSnippets duration={45} exerciseCount={8} totalSets={24} />);
 
-    const { container } = render(<SessionRichSnippets duration={45} exerciseCount={8} totalSets={24} />);
-
-    const svgs = container.querySelectorAll('svg');
-    svgs.forEach(svg => {
-      expect(svg).toHaveAttribute('size', '16');
-    });
+    const clockIcon = screen.getByTestId('clock-icon');
+    const dumbbellIcon = screen.getByTestId('dumbbell-icon');
+    const timerIcon = screen.getByTestId('timer-icon');
+    
+    expect(clockIcon).toHaveAttribute('width', '16');
+    expect(dumbbellIcon).toHaveAttribute('width', '16');
+    expect(timerIcon).toHaveAttribute('width', '16');
   });
 
   it('debería tener la estructura semántica correcta', () => {
-    (useI18n as any).mockReturnValue({
-      t: (key: string) => {
-        if (key === 'programs.min_short') return 'min';
-        if (key === 'programs.exercises') return 'ejercicios';
-        if (key === 'programs.set') return 'series';
-        return key;
-      },
-    });
-
     const { container } = render(<SessionRichSnippets duration={45} exerciseCount={8} totalSets={24} />);
 
-    // Verificar que los items están agrupados correctamente
     const items = container.querySelectorAll('.flex.items-center.gap-1');
     expect(items).toHaveLength(3);
   });
@@ -262,32 +173,32 @@ describe('Componente SessionRichSnippets', () => {
   });
 
   it('debería usar las traducciones correctas para cada clave', () => {
-    const mockT = vi.fn((key: string, options?: any) => {
+    const testMockT = vi.fn((key: string, options?: any) => {
       if (key === 'programs.min_short') return 'min';
       if (key === 'programs.exercises') return 'ejercicios';
       if (key === 'programs.set') return options?.count === 1 ? 'serie' : 'series';
       return key;
     });
-
-    (useI18n as any).mockReturnValue({ t: mockT });
+    
+    (useI18n as any).mockReturnValue(testMockT);
 
     render(<SessionRichSnippets duration={45} exerciseCount={8} totalSets={24} />);
 
-    expect(mockT).toHaveBeenCalledWith('programs.min_short');
-    expect(mockT).toHaveBeenCalledWith('programs.exercises');
-    expect(mockT).toHaveBeenCalledWith('programs.set', { count: 24 });
+    expect(testMockT).toHaveBeenCalledWith('programs.min_short');
+    expect(testMockT).toHaveBeenCalledWith('programs.exercises');
+    expect(testMockT).toHaveBeenCalledWith('programs.set', { count: 24 });
   });
 
   it('debería pasar el count correcto a la traducción de "set"', () => {
-    const mockT = vi.fn((key: string, options?: any) => {
+    const testMockT = vi.fn((key: string, options?: any) => {
       if (key === 'programs.set') return options?.count === 1 ? 'serie' : 'series';
       return key;
     });
-
-    (useI18n as any).mockReturnValue({ t: mockT });
+    
+    (useI18n as any).mockReturnValue(testMockT);
 
     render(<SessionRichSnippets duration={45} exerciseCount={8} totalSets={5} />);
 
-    expect(mockT).toHaveBeenCalledWith('programs.set', { count: 5 });
+    expect(testMockT).toHaveBeenCalledWith('programs.set', { count: 5 });
   });
 });
