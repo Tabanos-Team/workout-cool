@@ -1,7 +1,6 @@
-import React from "react";
+import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 
 // 1. CORRECCIÓN CLAVE: Mockeamos ResizeObserver usando una estructura de clase real para soportar "new"
 beforeEach(() => {
@@ -19,7 +18,7 @@ afterEach(() => {
 // 2. Mock de lucide-react para los iconos
 vi.mock("lucide-react", () => ({
   ChevronDown: ({ className }: { className?: string }) => (
-    <span data-testid="chevron-down" className={className}>▼</span>
+    <span className={className} data-testid="chevron-down">▼</span>
   ),
 }));
 

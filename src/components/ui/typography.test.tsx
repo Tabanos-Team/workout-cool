@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import React from "react";
+
 import { Typography } from "./typography"; // Ajusta la ruta de importación según tu estructura
 
 describe("Componente Typography (Polimórfico)", () => {
@@ -41,7 +41,7 @@ describe("Componente Typography (Polimórfico)", () => {
   it("debería respetar la propiedad 'as' cuando se fuerza un cambio de elemento (Polimorfismo)", () => {
     // Forzamos que una variante 'h1' se renderice estructuralmente como un 'span'
     render(
-      <Typography variant="h1" as="span">
+      <Typography as="span" variant="h1">
         H1 encubierto en un span
       </Typography>
     );
@@ -56,7 +56,7 @@ describe("Componente Typography (Polimórfico)", () => {
   it("debería transferir propiedades HTML nativas adicionales de forma segura (...restProps)", () => {
     // Pasamos un atributo nativo como 'href' e 'id' para comprobar que se propagan al DOM
     render(
-      <Typography variant="link" href="https://google.com" id="mi-link-test">
+      <Typography href="https://google.com" id="mi-link-test" variant="link">
         Ir a Google
       </Typography>
     );
@@ -70,7 +70,7 @@ describe("Componente Typography (Polimórfico)", () => {
 
   it("debería combinar clases personalizadas inyectadas mediante la prop 'className'", () => {
     render(
-      <Typography variant="muted" className="text-red-500 font-bold">
+      <Typography className="text-red-500 font-bold" variant="muted">
         Texto Muted Rojo
       </Typography>
     );

@@ -1,6 +1,7 @@
 import { fixupConfigRules, fixupPluginRules } from "@eslint/compat";
 import js from "@eslint/js";
 import { FlatCompat } from "@eslint/eslintrc";
+// eslint-disable-next-line import/no-unresolved
 import { configs as tsConfigs } from "typescript-eslint";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -10,6 +11,7 @@ import reactHooks from "eslint-plugin-react-hooks";
 import reactPlugin from "eslint-plugin-react";
 import importPlugin from "eslint-plugin-import";
 import unusedImportsPlugin from "eslint-plugin-unused-imports";
+// eslint-disable-next-line import/no-unresolved
 import tsParser from "@typescript-eslint/parser";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -21,6 +23,9 @@ const compat = new FlatCompat({
 });
 
 const config = [
+  {
+    ignores: ["public/sw.js"],
+  },
   js.configs.recommended,
   ...tsConfigs.recommended,
   ...fixupConfigRules(
@@ -50,6 +55,7 @@ const config = [
       "src/utils/inapp.js",
       "src/utils/externalLinkOpener.js",
       "src/utils/browserEscape.js",
+      "public/sw.js",
     ],
     plugins: {
       "react-hooks": fixupPluginRules(reactHooks),

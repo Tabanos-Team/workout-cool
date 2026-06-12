@@ -1,7 +1,7 @@
-import React from "react";
+import { describe, test, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect } from "vitest";
+
 import { Divider } from "./divider";
 
 describe("Pruebas Unitarias - Componente Divider", () => {
@@ -41,7 +41,7 @@ describe("Pruebas Unitarias - Componente Divider", () => {
   });
 
   test("debe propagar atributos HTML nativos adicionales mediante spread operator (...props)", () => {
-    render(<Divider data-testid="divisor-prueba" aria-label="Separador de contenido" />);
+    render(<Divider aria-label="Separador de contenido" data-testid="divisor-prueba" />);
     
     const rootElement = screen.getByTestId("divisor-prueba");
     expect(rootElement).toBeInTheDocument();

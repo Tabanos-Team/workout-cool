@@ -1,7 +1,6 @@
-import React from "react";
+import { describe, test, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect } from "vitest";
 
 import { ShineBorder } from "./shine-border";
 
@@ -33,7 +32,7 @@ describe("Pruebas Unitarias - Componente ShineBorder", () => {
 
   test("debe configurar correctamente las variables de CSS cuando se pasan props personalizadas", () => {
     const { container } = render(
-      <ShineBorder borderRadius={12} borderWidth={3} duration={8} color="#ff0000">
+      <ShineBorder borderRadius={12} borderWidth={3} color="#ff0000" duration={8}>
         <div>Card Premium</div>
       </ShineBorder>
     );

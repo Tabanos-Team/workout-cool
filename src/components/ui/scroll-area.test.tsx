@@ -1,7 +1,6 @@
-import React from "react";
+import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 
 // Mock de ResizeObserver obligatorio para componentes Radix
 beforeEach(() => {
@@ -39,7 +38,7 @@ describe("Pruebas Unitarias - Componente ScrollArea", () => {
     // Usamos data-testid directamente en la barra para evitar problemas de selectores con Radix en JSDOM
     const { rerender } = render(
       <ScrollArea type="always">
-        <ScrollBar orientation="vertical" forceMount data-testid="my-scrollbar" />
+        <ScrollBar data-testid="my-scrollbar" forceMount orientation="vertical" />
       </ScrollArea>
     );
     
@@ -50,7 +49,7 @@ describe("Pruebas Unitarias - Componente ScrollArea", () => {
     // Probamos la orientación horizontal
     rerender(
       <ScrollArea type="always">
-        <ScrollBar orientation="horizontal" forceMount data-testid="my-scrollbar" />
+        <ScrollBar data-testid="my-scrollbar" forceMount orientation="horizontal" />
       </ScrollArea>
     );
     
@@ -62,7 +61,7 @@ describe("Pruebas Unitarias - Componente ScrollArea", () => {
   test("debe concatenar clases CSS personalizadas tanto en ScrollArea como en ScrollBar usando cn", () => {
     const { container } = render(
       <ScrollArea className="custom-area-class" type="always">
-        <ScrollBar className="custom-bar-class" orientation="vertical" forceMount data-testid="gated-bar" />
+        <ScrollBar className="custom-bar-class" data-testid="gated-bar" forceMount orientation="vertical" />
         <div>Contenido estático</div>
       </ScrollArea>
     );
@@ -77,7 +76,7 @@ describe("Pruebas Unitarias - Componente ScrollArea", () => {
 
   test("debe heredar y propagar atributos HTML nativos adicionales (...props)", () => {
     render(
-      <ScrollArea id="unique-scroll-id" aria-label="Contenedor con scroll">
+      <ScrollArea aria-label="Contenedor con scroll" id="unique-scroll-id">
         <div>Contenido</div>
       </ScrollArea>
     );

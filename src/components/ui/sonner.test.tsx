@@ -1,7 +1,6 @@
-import React from "react";
+import { describe, test, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi, beforeEach } from "vitest";
 
 // 1. Mock de next-themes para controlar el hook useTheme
 const mockUseTheme = vi.fn();
@@ -13,12 +12,11 @@ vi.mock("next-themes", () => ({
 vi.mock("sonner", () => ({
   Toaster: ({ className, theme, toastOptions, position, expand, id }: any) => (
     <div 
-      data-testid="sonner-toaster-mock" 
-      className={className} 
+      className={className}
+      data-expand={expand ? String(expand) : undefined}
+      data-position={position}
+      data-testid="sonner-toaster-mock"
       data-theme={theme}
-      // Forzamos el mapeo a string para que Jest-DOM/Vitest puedan leer los atributos
-      position={position}
-      expand={expand ? String(expand) : undefined}
       id={id}
     >
       <div data-testid="toast-classes">{toastOptions?.classNames?.toast}</div>
@@ -67,17 +65,17 @@ describe("Pruebas Unitarias - Componente ToastSonner", () => {
     
     render(
       <ToastSonner 
-        position="top-right" 
-        expand={true}
+        expand={true} 
         id="app-global-toaster"
+        position="top-right"
       />
     );
 
     const toaster = screen.getByTestId("sonner-toaster-mock");
     
     // Ahora estas aserciones pasarán perfectamente gracias al mapeo explícito en el Mock
-    expect(toaster).toHaveAttribute("position", "top-right");
-    expect(toaster).toHaveAttribute("expand", "true");
+    expect(toaster).toHaveAttribute("data-position", "top-right");
+    expect(toaster).toHaveAttribute("data-expand", "true");
     expect(toaster).toHaveAttribute("id", "app-global-toaster");
   });
 });

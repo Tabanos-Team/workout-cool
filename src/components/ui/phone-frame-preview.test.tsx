@@ -1,7 +1,6 @@
-import React from "react";
+import { describe, test, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect } from "vitest";
 
 import { PhoneFramePreview } from "./phone-frame-preview";
 
@@ -54,7 +53,7 @@ describe("Pruebas Unitarias - Componente PhoneFramePreview", () => {
 
   test("debe propagar atributos HTML adicionales (...props) al contenedor raíz", () => {
     render(
-      <PhoneFramePreview data-testid="phone-wrapper" aria-label="Vista previa móvil" id="mobile-frame-id">
+      <PhoneFramePreview aria-label="Vista previa móvil" data-testid="phone-wrapper" id="mobile-frame-id">
         <div>Pantalla</div>
       </PhoneFramePreview>
     );

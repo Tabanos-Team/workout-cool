@@ -1,9 +1,9 @@
-import React from "react";
+import { describe, test, expect, vi } from "vitest";
+import { HelpCircle } from "lucide-react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi } from "vitest";
+
 import { Alert, AlertTitle, AlertDescription } from "./alert";
-import { HelpCircle } from "lucide-react";
 
 // Simulamos lucide-react para poder rastrear e identificar qué icono específico se está renderizando por variante
 vi.mock("lucide-react", async (importOriginal) => {
@@ -81,7 +81,7 @@ describe("Pruebas Unitarias - Componente Alert", () => {
 
   test("debe priorizar y renderizar un icono personalizado si se pasa por prop", () => {
     render(
-      <Alert variant="success" icon={HelpCircle}>
+      <Alert icon={HelpCircle} variant="success">
         <AlertTitle>Personalizado</AlertTitle>
       </Alert>
     );

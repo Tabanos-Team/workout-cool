@@ -1,7 +1,6 @@
-import React from "react";
+import { describe, test, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect } from "vitest";
 
 import { Skeleton } from "./skeleton";
 
@@ -25,8 +24,8 @@ describe("Pruebas Unitarias - Componente Skeleton", () => {
     render(
       <Skeleton 
         data-testid="skeleton-custom-size" 
-        width="200px" 
         height="50px" 
+        width="200px" 
       />
     );
     
@@ -41,8 +40,8 @@ describe("Pruebas Unitarias - Componente Skeleton", () => {
     render(
       <Skeleton 
         data-testid="skeleton-numeric-size" 
-        width={100} 
         height={40} 
+        width={100} 
       />
     );
     
@@ -64,7 +63,7 @@ describe("Pruebas Unitarias - Componente Skeleton", () => {
   });
 
   test("debe concatenar clases CSS externas personalizadas mediante la función cn", () => {
-    render(<Skeleton data-testid="skeleton-classes" className="mb-4 representation-card" />);
+    render(<Skeleton className="mb-4 representation-card" data-testid="skeleton-classes" />);
     
     const skeleton = screen.getByTestId("skeleton-classes");
     

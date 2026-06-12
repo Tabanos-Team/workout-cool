@@ -1,5 +1,6 @@
-import { readFileSync } from "fs";
 import { join } from "path";
+import { readFileSync } from "fs";
+
 import { prisma } from "../src/shared/lib/prisma";
 
 async function main() {

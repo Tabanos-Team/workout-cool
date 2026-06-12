@@ -13,7 +13,6 @@ import {
   type UserProfile,
   type UserSubscription
 } from "../user/lib/user-logic";
-
 import {
   isExerciseComplete,
   hasVideoContent,

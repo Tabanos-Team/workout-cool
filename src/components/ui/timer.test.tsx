@@ -1,7 +1,6 @@
-import React from "react";
+import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 
 import { Timer } from "./timer";
 
@@ -24,19 +23,19 @@ describe("Pruebas Unitarias - Componente Timer", () => {
 
   test("debe aceptar un valor inicial de segundos y formatearlo correctamente", () => {
     // 90 segundos = 01:30
-    render(<Timer isRunning={false} initialSeconds={90} />);
+    render(<Timer initialSeconds={90} isRunning={false} />);
     expect(screen.getByText("01:30")).toBeInTheDocument();
   });
 
   test("debe cambiar al formato hh:mm:ss si el tiempo supera una hora", () => {
     // 3665 segundos = 01:01:05 (1 hora, 1 minuto, 5 segundos)
-    render(<Timer isRunning={false} initialSeconds={3665} />);
+    render(<Timer initialSeconds={3665} isRunning={false} />);
     expect(screen.getByText("01:01:05")).toBeInTheDocument();
   });
 
   test("debe incrementar el tiempo cada segundo y disparar onChange cuando isRunning es true", () => {
     const handleChange = vi.fn();
-    render(<Timer isRunning={true} initialSeconds={0} onChange={handleChange} />);
+    render(<Timer initialSeconds={0} isRunning={true} onChange={handleChange} />);
 
     expect(screen.getByText("00:00")).toBeInTheDocument();
 
@@ -59,7 +58,7 @@ describe("Pruebas Unitarias - Componente Timer", () => {
   });
 
   test("debe pausar el incremento del temporizador cuando isRunning cambia a false", () => {
-    const { rerender } = render(<Timer isRunning={true} initialSeconds={10} />);
+    const { rerender } = render(<Timer initialSeconds={10} isRunning={true} />);
     
     expect(screen.getByText("00:10")).toBeInTheDocument();
 
@@ -69,7 +68,7 @@ describe("Pruebas Unitarias - Componente Timer", () => {
     expect(screen.getByText("00:11")).toBeInTheDocument();
 
     // Cambiamos la prop para pausar el componente
-    rerender(<Timer isRunning={false} initialSeconds={10} />);
+    rerender(<Timer initialSeconds={10} isRunning={false} />);
 
     act(() => {
       vi.advanceTimersByTime(3000);
@@ -80,17 +79,17 @@ describe("Pruebas Unitarias - Componente Timer", () => {
   });
 
   test("debe reiniciar o actualizar los segundos si la propiedad initialSeconds muta externamente", () => {
-    const { rerender } = render(<Timer isRunning={false} initialSeconds={5} />);
+    const { rerender } = render(<Timer initialSeconds={5} isRunning={false} />);
     expect(screen.getByText("00:05")).toBeInTheDocument();
 
     // Forzamos actualización externa de la base de tiempo inicial
-    rerender(<Timer isRunning={false} initialSeconds={45} />);
+    rerender(<Timer initialSeconds={45} isRunning={false} />);
     expect(screen.getByText("00:45")).toBeInTheDocument();
   });
 
   test("debe limpiar el intervalo nativo de la memoria al desmontar el componente", () => {
     const clearIntervalSpy = vi.spyOn(global, "clearInterval");
-    const { unmount } = render(<Timer isRunning={true} initialSeconds={0} />);
+    const { unmount } = render(<Timer initialSeconds={0} isRunning={true} />);
 
     unmount();
 

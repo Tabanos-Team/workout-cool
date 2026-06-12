@@ -1,7 +1,6 @@
-import React from "react";
+import { describe, test, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi, beforeEach } from "vitest";
 
 // 1. Mockeamos Framer Motion para simplificar los hooks de animación en JSDOM
 vi.mock("framer-motion", async () => {
@@ -32,7 +31,7 @@ describe("Pruebas Unitarias - Componente Button con MovingBorder", () => {
   beforeEach(() => {
     // 3. Añadimos mocks de métodos SVG al prototipo para evitar que rompan en JSDOM
     SVGElement.prototype.getTotalLength = vi.fn(() => 100);
-    // @ts-ignore
+    // @ts-expect-error - getPointAtLength not available in JSDOM
     SVGElement.prototype.getPointAtLength = vi.fn(() => ({ x: 10, y: 10 }));
   });
 
@@ -83,9 +82,9 @@ describe("Pruebas Unitarias - Componente Button con MovingBorder", () => {
   test("debe concatenar clases personalizadas externas (containerClassName, borderClassName y className)", () => {
     render(
       <Button 
-        containerClassName="bg-red-500" 
-        borderClassName="custom-border-gradient"
+        borderClassName="custom-border-gradient" 
         className="text-yellow-400"
+        containerClassName="bg-red-500"
       >
         Clases mixtas
       </Button>

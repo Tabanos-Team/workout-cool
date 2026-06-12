@@ -1,7 +1,6 @@
-import React from "react";
+import { describe, test, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi } from "vitest";
 
 // 1. Mockeamos el hook de internacionalización useI18n
 vi.mock("locales/client", () => ({
@@ -23,7 +22,7 @@ vi.mock("locales/client", () => ({
 vi.mock("next/link", () => ({
   __esModule: true,
   default: ({ children, href, className }: any) => (
-    <a href={href} className={className}>
+    <a className={className} href={href}>
       {children}
     </a>
   ),
@@ -32,12 +31,12 @@ vi.mock("next/link", () => ({
 // 3. Mockeamos los subcomponentes de Alert
 vi.mock("@/components/ui/alert", () => ({
   Alert: ({ children, className, variant }: any) => (
-    <div data-testid="alert-root" data-variant={variant} className={className}>
+    <div className={className} data-testid="alert-root" data-variant={variant}>
       {children}
     </div>
   ),
   AlertDescription: ({ children, className }: any) => (
-    <div data-testid="alert-description" className={className}>
+    <div className={className} data-testid="alert-description">
       {children}
     </div>
   ),

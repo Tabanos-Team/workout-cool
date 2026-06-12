@@ -1,7 +1,6 @@
-import React from "react";
+import { describe, test, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect } from "vitest";
 
 import {
   Table,
@@ -106,7 +105,7 @@ describe("Pruebas Unitarias - Componentes de Tabla", () => {
     render(
       <Table>
         <TableBody>
-          <TableRow data-testid="row-selected" data-state="selected" id="row-prime">
+          <TableRow data-state="selected" data-testid="row-selected" id="row-prime">
             <TableCell colSpan={2}>Celda Expandida</TableCell>
           </TableRow>
         </TableBody>

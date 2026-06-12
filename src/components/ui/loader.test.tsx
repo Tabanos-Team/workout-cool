@@ -1,7 +1,6 @@
-import React from "react";
+import { describe, test, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi } from "vitest";
 
 // 1. Mockeamos lucide-react para controlar el elemento devuelto por Loader2
 vi.mock("lucide-react", () => {
@@ -9,8 +8,8 @@ vi.mock("lucide-react", () => {
     // Simulamos el componente Loader2 devolviendo un svg o div plano con sus props
     Loader2: ({ className, size, ...props }: any) => (
       <div 
-        data-testid="lucide-loader" 
         className={className} 
+        data-testid="lucide-loader" 
         style={size ? { width: size, height: size } : undefined}
         {...props} 
       />
@@ -57,7 +56,7 @@ describe("Pruebas Unitarias - Componente Loader", () => {
   });
 
   test("debe transferir atributos adicionales mediante desestructuración (...props)", () => {
-    render(<Loader data-custom-attribute="test-value" aria-label="Cargando contenido" />);
+    render(<Loader aria-label="Cargando contenido" data-custom-attribute="test-value" />);
     
     const loaderElement = screen.getByTestId("lucide-loader");
     expect(loaderElement).toHaveAttribute("data-custom-attribute", "test-value");

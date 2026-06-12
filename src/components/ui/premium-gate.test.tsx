@@ -1,7 +1,6 @@
-import React from "react";
+import { describe, test, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi, beforeEach } from "vitest";
 
 // 1. Mock de las dependencias de internacionalización
 vi.mock("locales/client", () => ({
@@ -26,7 +25,7 @@ vi.mock("@/features/ads/hooks/useUserSubscription", () => ({
 
 // 3. Mock de componentes UI simples/estructurales para evitar fallos de importación de shadcn
 vi.mock("@/components/ui/skeleton", () => ({
-  Skeleton: ({ className }: { className?: string }) => <div data-testid="skeleton" className={className} />,
+  Skeleton: ({ className }: { className?: string }) => <div className={className} data-testid="skeleton" />,
 }));
 
 vi.mock("@/components/ui/card", () => ({
@@ -45,7 +44,7 @@ vi.mock("@/components/ui/button", () => ({
 vi.mock("next/link", () => ({
   __esModule: true,
   default: ({ children, href, onClick }: any) => (
-    <a href={href} onClick={onClick} data-testid="next-link">
+    <a data-testid="next-link" href={href} onClick={onClick}>
       {children}
     </a>
   ),
@@ -149,7 +148,7 @@ describe("Pruebas Unitarias - PremiumGate", () => {
 
 describe("Pruebas Unitarias - PremiumBadge", () => {
   test("debe renderizar el badge con el tamaño y las clases de gradiente correctas", () => {
-    const { rerender } = render(<PremiumBadge size="small" className="extra-class" />);
+    const { rerender } = render(<PremiumBadge className="extra-class" size="small" />);
     
     let badge = screen.getByText("PREMIUM");
     expect(badge).toBeInTheDocument();

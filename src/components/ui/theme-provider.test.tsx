@@ -1,16 +1,15 @@
-import React from "react";
+import { describe, test, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi } from "vitest";
 
 // Mock de next-themes para verificar que el ThemeProvider real propague las propiedades adecuadamente
 vi.mock("next-themes", () => {
   return {
     ThemeProvider: ({ children, attribute, defaultTheme }: any) => (
       <div 
-        data-testid="next-themes-provider-mock" 
         data-attribute={attribute} 
-        data-default-theme={defaultTheme}
+        data-default-theme={defaultTheme} 
+        data-testid="next-themes-provider-mock"
       >
         {children}
       </div>

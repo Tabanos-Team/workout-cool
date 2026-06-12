@@ -1,7 +1,6 @@
-import React from "react";
+import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 
 // 1. Instanciación robusta de ResizeObserver para componentes interactivos de Radix
 beforeEach(() => {
@@ -38,10 +37,10 @@ describe("Pruebas Unitarias - Componente Select", () => {
         <SelectContent data-testid="select-content">
           <SelectGroup>
             <SelectLabel data-testid="select-label">Roles disponibles</SelectLabel>
-            <SelectItem value="opcion-1" data-testid="item-1">Administrador</SelectItem>
-            <SelectItem value="opcion-2" data-testid="item-2">Editor</SelectItem>
+            <SelectItem data-testid="item-1" value="opcion-1">Administrador</SelectItem>
+            <SelectItem data-testid="item-2" value="opcion-2">Editor</SelectItem>
             <SelectSeparator data-testid="select-separator" />
-            <SelectItem value="opcion-3" data-testid="item-3" disabled>Invitado</SelectItem>
+            <SelectItem data-testid="item-3" disabled value="opcion-3">Invitado</SelectItem>
           </SelectGroup>
         </SelectContent>
       </Select>

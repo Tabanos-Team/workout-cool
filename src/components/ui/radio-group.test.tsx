@@ -1,7 +1,6 @@
-import React from "react";
+import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 
 // 1. Mock preventivo de ResizeObserver para evitar colapsos por dependencias de Radix UI
 beforeEach(() => {
@@ -19,7 +18,7 @@ afterEach(() => {
 // 2. Mock de lucide-react para el icono Circle
 vi.mock("lucide-react", () => ({
   Circle: ({ className }: { className?: string }) => (
-    <span data-testid="lucide-circle" className={className} />
+    <span className={className} data-testid="lucide-circle" />
   ),
 }));
 
@@ -27,7 +26,7 @@ vi.mock("lucide-react", () => ({
 vi.mock("@/components/svg/IconCheckboxCheck", () => ({
   __esModule: true,
   default: ({ className }: { className?: string }) => (
-    <span data-testid="custom-check-icon" className={className} />
+    <span className={className} data-testid="custom-check-icon" />
   ),
 }));
 
@@ -38,8 +37,8 @@ describe("Pruebas Unitarias - Componente RadioGroup", () => {
   test("debe renderizar la lista de opciones y permitir cambiar la selección mediante clics", () => {
     render(
       <RadioGroup defaultValue="opcion-1">
-        <RadioGroupItem value="opcion-1" data-testid="item-1" />
-        <RadioGroupItem value="opcion-2" data-testid="item-2" />
+        <RadioGroupItem data-testid="item-1" value="opcion-1" />
+        <RadioGroupItem data-testid="item-2" value="opcion-2" />
       </RadioGroup>
     );
 
@@ -61,10 +60,10 @@ describe("Pruebas Unitarias - Componente RadioGroup", () => {
     render(
       <RadioGroup defaultValue="danger-opt">
         <RadioGroupItem 
-          value="danger-opt" 
-          variant="outline" 
           color="danger" 
           data-testid="item-danger" 
+          value="danger-opt" 
+          variant="outline" 
         />
       </RadioGroup>
     );
@@ -79,7 +78,7 @@ describe("Pruebas Unitarias - Componente RadioGroup", () => {
   test("debe renderizar la variante alternativa RadioGroupCheck con su icono SVG personalizado", () => {
     render(
       <RadioGroup defaultValue="check-1">
-        <RadioGroupCheck value="check-1" data-testid="radio-check" />
+        <RadioGroupCheck data-testid="radio-check" value="check-1" />
       </RadioGroup>
     );
 
@@ -98,8 +97,8 @@ describe("Pruebas Unitarias - Componente RadioGroup", () => {
   test("debe respetar el estado deshabilitado (disabled) impidiendo interactividad y aplicando opacidad", () => {
     render(
       <RadioGroup defaultValue="1">
-        <RadioGroupItem value="1" data-testid="active-item" />
-        <RadioGroupItem value="2" disabled data-testid="disabled-item" />
+        <RadioGroupItem data-testid="active-item" value="1" />
+        <RadioGroupItem data-testid="disabled-item" disabled value="2" />
       </RadioGroup>
     );
 
@@ -120,7 +119,7 @@ describe("Pruebas Unitarias - Componente RadioGroup", () => {
   test("debe concatenar clases personalizadas externas utilizando la función cn", () => {
     render(
       <RadioGroup className="custom-group-layout">
-        <RadioGroupItem value="1" className="custom-item-style" data-testid="item" />
+        <RadioGroupItem className="custom-item-style" data-testid="item" value="1" />
       </RadioGroup>
     );
 

@@ -1,12 +1,11 @@
-import React from "react";
+import { describe, test, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi } from "vitest";
 
 // Mock de lucide-react para inspeccionar las clases aplicadas al icono Star
 vi.mock("lucide-react", () => ({
   Star: ({ className }: { className: string }) => (
-    <span data-testid="star-icon" className={className} />
+    <span className={className} data-testid="star-icon" />
   ),
 }));
 
@@ -70,7 +69,7 @@ describe("Pruebas Unitarias - Componente StarButton", () => {
   });
 
   test("debe fusionar limpiamente clases CSS externas mediante la utilidad cn", () => {
-    render(<StarButton isActive={false} isLoading={false} className="extra-class-glowing m-4" />);
+    render(<StarButton className="extra-class-glowing m-4" isActive={false} isLoading={false} />);
 
     const button = screen.getByRole("button");
     expect(button).toHaveClass("text-yellow-500", "extra-class-glowing", "m-4");

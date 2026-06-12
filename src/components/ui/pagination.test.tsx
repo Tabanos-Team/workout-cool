@@ -1,15 +1,14 @@
-import React from "react";
+import { describe, test, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi } from "vitest";
 
 // 1. Mock de lucide-react para los iconos de flechas
 vi.mock("lucide-react", () => ({
   ChevronLeft: ({ className }: { className?: string }) => (
-    <span data-testid="chevron-left" className={className}>◀</span>
+    <span className={className} data-testid="chevron-left">◀</span>
   ),
   ChevronRight: ({ className }: { className?: string }) => (
-    <span data-testid="chevron-right" className={className}>▶</span>
+    <span className={className} data-testid="chevron-right">▶</span>
   ),
 }));
 
@@ -97,14 +96,14 @@ describe("Pruebas Unitarias - Componente Pagination", () => {
   });
 
   test("debe deshabilitar la interacción y aplicar opacidad en 'PaginationPrevious' y 'PaginationNext' si se pasa la propiedad disabled", () => {
-    const { rerender } = render(<PaginationPrevious href="?page=1" disabled />);
+    const { rerender } = render(<PaginationPrevious disabled href="?page=1" />);
 
-    let prevLink = screen.getByRole("link", { name: /go to previous page/i });
+    const prevLink = screen.getByRole("link", { name: /go to previous page/i });
     expect(prevLink).toHaveClass("pointer-events-none", "cursor-not-allowed", "opacity-50");
 
-    rerender(<PaginationNext href="?page=3" disabled />);
+    rerender(<PaginationNext disabled href="?page=3" />);
     
-    let nextLink = screen.getByRole("link", { name: /go to next page/i });
+    const nextLink = screen.getByRole("link", { name: /go to next page/i });
     expect(nextLink).toHaveClass("pointer-events-none", "cursor-not-allowed", "opacity-50");
   });
 
@@ -113,7 +112,7 @@ describe("Pruebas Unitarias - Componente Pagination", () => {
       <Pagination className="custom-nav">
         <PaginationContent className="custom-ul">
           <PaginationItem className="custom-li">
-            <PaginationLink href="#" className="custom-a" />
+            <PaginationLink className="custom-a" href="#" />
           </PaginationItem>
         </PaginationContent>
       </Pagination>

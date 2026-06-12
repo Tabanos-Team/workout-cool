@@ -1,12 +1,12 @@
-import React from "react";
+import { describe, test, expect } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect } from "vitest";
+
 import { Input } from "./input";
 
 describe("Pruebas Unitarias - Componente Input", () => {
   test("debe renderizar el elemento input correctamente con sus propiedades nativas", () => {
-    render(<Input placeholder="Nombre de usuario" data-testid="base-input" />);
+    render(<Input data-testid="base-input" placeholder="Nombre de usuario" />);
     
     const input = screen.getByTestId("base-input") as HTMLInputElement;
     expect(input).toBeInTheDocument();
@@ -17,7 +17,7 @@ describe("Pruebas Unitarias - Componente Input", () => {
   });
 
   test("debe alternar la visibilidad del texto al hacer clic en el botón de contraseña", () => {
-    render(<Input type="password" placeholder="Tu clave" data-testid="password-input" />);
+    render(<Input data-testid="password-input" placeholder="Tu clave" type="password" />);
     
     const input = screen.getByTestId("password-input");
     expect(input).toHaveAttribute("type", "password");
@@ -35,7 +35,7 @@ describe("Pruebas Unitarias - Componente Input", () => {
   });
 
   test("debe aplicar las clases correctas de CVA según la variante provista", () => {
-    render(<Input variant="Search" data-testid="variant-input" />);
+    render(<Input data-testid="variant-input" variant="Search" />);
     
     const input = screen.getByTestId("variant-input");
     expect(input).toHaveClass("border", "border-gray-300", "py-[7px]", "pl-8");
@@ -54,7 +54,7 @@ describe("Pruebas Unitarias - Componente Input", () => {
   });
 
   test("debe respetar el estado deshabilitado (disabled)", () => {
-    render(<Input disabled placeholder="Bloqueado" data-testid="disabled-input" />);
+    render(<Input data-testid="disabled-input" disabled placeholder="Bloqueado" />);
     
     const input = screen.getByTestId("disabled-input");
     expect(input).toBeDisabled();

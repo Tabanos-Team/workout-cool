@@ -1,7 +1,6 @@
-import React from "react";
+import { describe, test, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi, beforeEach } from "vitest";
 
 // 1. Mock de las dependencias de internacionalización
 vi.mock("locales/client", () => ({
@@ -27,8 +26,8 @@ vi.mock("lucide-react", () => ({
 
 // 3. Mock de los subcomponentes UI de la Alerta y Botón
 vi.mock("@/components/ui/alert", () => ({
-  Alert: ({ children, className }: any) => <div data-testid="alert-root" className={className}>{children}</div>,
-  AlertDescription: ({ children, className }: any) => <div data-testid="alert-description" className={className}>{children}</div>,
+  Alert: ({ children, className }: any) => <div className={className} data-testid="alert-root">{children}</div>,
+  AlertDescription: ({ children, className }: any) => <div className={className} data-testid="alert-description">{children}</div>,
 }));
 
 vi.mock("@/components/ui/button", () => ({
@@ -38,7 +37,7 @@ vi.mock("@/components/ui/button", () => ({
 // 4. Mock de Next.js Link
 vi.mock("next/link", () => ({
   __esModule: true,
-  default: ({ children, href }: any) => <a href={href} data-testid="next-link">{children}</a>,
+  default: ({ children, href }: any) => <a data-testid="next-link" href={href}>{children}</a>,
 }));
 
 // CLAVE DE LA CORRECCIÓN: Variable de control externa para cambiar el estado del AdWrapper

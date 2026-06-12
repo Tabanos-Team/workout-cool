@@ -1,7 +1,6 @@
-import React from "react";
+import { describe, test, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect } from "vitest";
 
 import { Separator } from "./separator";
 
@@ -48,7 +47,7 @@ describe("Pruebas Unitarias - Componente Separator", () => {
   });
 
   test("debe propagar propiedades y atributos HTML adicionales (...props)", () => {
-    render(<Separator id="landing-divider" data-testid="test-separator" />);
+    render(<Separator data-testid="test-separator" id="landing-divider" />);
     
     const separatorElement = screen.getByTestId("test-separator");
     expect(separatorElement).toBeInTheDocument();

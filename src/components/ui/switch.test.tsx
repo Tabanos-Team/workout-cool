@@ -1,7 +1,6 @@
-import React from "react";
+import { describe, test, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi, beforeEach } from "vitest";
 
 // Mock obligatorio para primitivas estructurales de Radix UI en entornos JSDOM
 beforeEach(() => {
@@ -53,7 +52,7 @@ describe("Pruebas Unitarias - Componentes Switch y SwitchOutline", () => {
     });
 
     test("debe aplicar correctamente las clases de la variante de tamaño 'large' y el color 'success'", () => {
-      render(<Switch data-testid="switch-variant" variant="large" color="success" />);
+      render(<Switch color="success" data-testid="switch-variant" variant="large" />);
       
       const switchRoot = screen.getByTestId("switch-variant");
       // Verifica la mutación de tamaño (h-6 w-12) y el color CVA (data-[state=checked]:bg-success)
@@ -61,7 +60,7 @@ describe("Pruebas Unitarias - Componentes Switch y SwitchOutline", () => {
     });
 
     test("debe permitir fusionar clases externas mediante la función cn", () => {
-      render(<Switch data-testid="switch-cn" className="custom-switch-margin shadow-md" />);
+      render(<Switch className="custom-switch-margin shadow-md" data-testid="switch-cn" />);
       
       const switchRoot = screen.getByTestId("switch-cn");
       expect(switchRoot).toHaveClass("custom-switch-margin", "shadow-md", "peer");
@@ -90,7 +89,7 @@ describe("Pruebas Unitarias - Componentes Switch y SwitchOutline", () => {
     });
 
     test("debe inyectar clases de personalización externas en el contenedor raíz", () => {
-      render(<SwitchOutline data-testid="switch-outline-cn" className="border-red-500 opacity-90" />);
+      render(<SwitchOutline className="border-red-500 opacity-90" data-testid="switch-outline-cn" />);
       
       const switchOutlineRoot = screen.getByTestId("switch-outline-cn");
       expect(switchOutlineRoot).toHaveClass("border-red-500", "opacity-90", "inline-flex");

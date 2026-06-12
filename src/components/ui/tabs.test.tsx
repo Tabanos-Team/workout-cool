@@ -1,7 +1,6 @@
-import React from "react";
+import { describe, test, expect, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, beforeEach } from "vitest";
 
 // Mock estructural obligatorio para primitivas de Radix UI en entornos JSDOM
 beforeEach(() => {
@@ -20,13 +19,13 @@ describe("Pruebas Unitarias - Componente Tabs", () => {
     render(
       <Tabs defaultValue="account">
         <TabsList>
-          <TabsTrigger value="account" data-testid="trigger-account">Cuenta</TabsTrigger>
-          <TabsTrigger value="password" data-testid="trigger-password">Contraseña</TabsTrigger>
+          <TabsTrigger data-testid="trigger-account" value="account">Cuenta</TabsTrigger>
+          <TabsTrigger data-testid="trigger-password" value="password">Contraseña</TabsTrigger>
         </TabsList>
-        <TabsContent value="account" data-testid="content-account">
+        <TabsContent data-testid="content-account" value="account">
           Configuración de la cuenta.
         </TabsContent>
-        <TabsContent value="password" data-testid="content-password">
+        <TabsContent data-testid="content-password" value="password">
           Cambia tu contraseña.
         </TabsContent>
       </Tabs>
@@ -48,11 +47,11 @@ describe("Pruebas Unitarias - Componente Tabs", () => {
     render(
       <Tabs defaultValue="account">
         <TabsList>
-          <TabsTrigger value="account" data-testid="trigger-account">Cuenta</TabsTrigger>
-          <TabsTrigger value="password" data-testid="trigger-password">Contraseña</TabsTrigger>
+          <TabsTrigger data-testid="trigger-account" value="account">Cuenta</TabsTrigger>
+          <TabsTrigger data-testid="trigger-password" value="password">Contraseña</TabsTrigger>
         </TabsList>
-        <TabsContent value="account" data-testid="content-account">Panel Cuenta</TabsContent>
-        <TabsContent value="password" data-testid="content-password">Panel Password</TabsContent>
+        <TabsContent data-testid="content-account" value="account">Panel Cuenta</TabsContent>
+        <TabsContent data-testid="content-password" value="password">Panel Password</TabsContent>
       </Tabs>
     );
 
@@ -77,11 +76,11 @@ describe("Pruebas Unitarias - Componente Tabs", () => {
     render(
       <Tabs defaultValue="account">
         <TabsList>
-          <TabsTrigger value="account" data-testid="trigger-account">Cuenta</TabsTrigger>
-          <TabsTrigger value="password" disabled data-testid="trigger-password-disabled">Contraseña</TabsTrigger>
+          <TabsTrigger data-testid="trigger-account" value="account">Cuenta</TabsTrigger>
+          <TabsTrigger data-testid="trigger-password-disabled" disabled value="password">Contraseña</TabsTrigger>
         </TabsList>
-        <TabsContent value="account" data-testid="content-account">Panel Cuenta</TabsContent>
-        <TabsContent value="password" data-testid="content-password">Panel Password</TabsContent>
+        <TabsContent data-testid="content-account" value="account">Panel Cuenta</TabsContent>
+        <TabsContent data-testid="content-password" value="password">Panel Password</TabsContent>
       </Tabs>
     );
 
@@ -97,7 +96,7 @@ describe("Pruebas Unitarias - Componente Tabs", () => {
 
   test("debe forzar la dirección 'ltr' de forma estática en la raíz del componente", () => {
     render(
-      <Tabs defaultValue="tab1" data-testid="tabs-root">
+      <Tabs data-testid="tabs-root" defaultValue="tab1">
         <TabsList><TabsTrigger value="tab1">Tab</TabsTrigger></TabsList>
       </Tabs>
     );
@@ -107,11 +106,11 @@ describe("Pruebas Unitarias - Componente Tabs", () => {
 
   test("debe permitir concatenar clases personalizadas externas usando la utilidad cn", () => {
     render(
-      <Tabs defaultValue="tab1" className="custom-tabs-layout">
+      <Tabs className="custom-tabs-layout" defaultValue="tab1">
         <TabsList className="custom-list-bg">
-          <TabsTrigger value="tab1" className="custom-trigger-text">Pestaña</TabsTrigger>
+          <TabsTrigger className="custom-trigger-text" value="tab1">Pestaña</TabsTrigger>
         </TabsList>
-        <TabsContent value="tab1" className="custom-content-padding" data-testid="content-cn">
+        <TabsContent className="custom-content-padding" data-testid="content-cn" value="tab1">
           Contenido
         </TabsContent>
       </Tabs>

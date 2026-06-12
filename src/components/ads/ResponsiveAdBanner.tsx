@@ -1,10 +1,11 @@
 "use client";
 
+import { GoogleAdSense } from "./GoogleAdSense";
+import { AdWrapper } from "./AdWrapper";
+
 import { env } from "@/env";
 import { AdPlaceholder } from "@/components/ads/AdPlaceholder";
 
-import { GoogleAdSense } from "./GoogleAdSense";
-import { AdWrapper } from "./AdWrapper";
 
 interface ResponsiveAdBannerProps {
   adSlot: string;
@@ -49,6 +50,7 @@ export function ResponsiveAdBanner({ adSlot }: ResponsiveAdBannerProps) {
         </div>
       </div>
 
+      {/* eslint-disable-next-line react/no-unknown-property */}
       <style jsx>{`
         .responsive-ad-container {
           width: 100%;

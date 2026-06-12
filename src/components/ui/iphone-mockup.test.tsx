@@ -1,14 +1,13 @@
-import React from "react";
+import { describe, test, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi, beforeAll } from "vitest";
 
 // 1. Mockeamos 'next/image' para transformarlo en una etiqueta img estándar
 vi.mock("next/image", () => ({
   __esModule: true,
   default: (props: any) => {
     const { src, alt, priority, ...rest } = props;
-    return <img src={src?.src || src} alt={alt} {...rest} />;
+    return <img alt={alt} src={src?.src || src} {...rest} />;
   },
  }));
 
@@ -90,7 +89,7 @@ describe("Pruebas Unitarias - IPhoneMockup", () => {
     const customHeight = 800;
 
     const { container } = render(
-      <IPhoneMockup width={customWidth} height={customHeight}>
+      <IPhoneMockup height={customHeight} width={customWidth}>
         <div>Pantalla Escalada</div>
       </IPhoneMockup>
     );

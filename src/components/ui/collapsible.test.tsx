@@ -1,7 +1,7 @@
-import React from "react";
+import { describe, test, expect } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect } from "vitest";
+
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "./collapsible"; // Ajusta a "collapside" si no renombraste el archivo original
 
 describe("Pruebas Unitarias - Componente Collapsible", () => {
@@ -65,7 +65,7 @@ describe("Pruebas Unitarias - Componente Collapsible", () => {
 
   test("debe pasar y respetar las propiedades HTML nativas adicionales", () => {
     render(
-      <Collapsible data-testid="collapsible-root" className="custom-wrapper">
+      <Collapsible className="custom-wrapper" data-testid="collapsible-root">
         <CollapsibleTrigger className="btn-trigger">Trigger</CollapsibleTrigger>
         <CollapsibleContent className="panel-content">Content</CollapsibleContent>
       </Collapsible>

@@ -1,7 +1,8 @@
+import { describe, test, expect, vi } from "vitest";
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi } from "vitest";
+
 import { DonationAlert } from "./donation-alert";
 
 // 1. Mockeamos de forma estricta el módulo de idiomas antes de que se monte el componente
@@ -16,10 +17,10 @@ vi.mock("locales/client", () => {
 vi.mock("@/components/ui/alert", () => {
   return {
     Alert: ({ children, className }: { children: React.ReactNode; className: string }) => (
-      <div data-testid="alert-root" className={className}>{children}</div>
+      <div className={className} data-testid="alert-root">{children}</div>
     ),
     AlertDescription: ({ children, className }: { children: React.ReactNode; className: string }) => (
-      <div data-testid="alert-description" className={className}>{children}</div>
+      <div className={className} data-testid="alert-description">{children}</div>
     ),
   };
 });

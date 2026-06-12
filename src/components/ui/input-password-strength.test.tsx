@@ -1,19 +1,22 @@
+import { describe, test, expect, vi } from "vitest";
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi } from "vitest";
+
 import { InputPasswordStrength } from "./input-password-strength";
 
 // Mock del componente de entrada base para aislar estilos o capas complejas
 vi.mock("@/components/ui/input", () => ({
-  Input: React.forwardRef<HTMLInputElement, any>(({ onChange, value, ...props }, ref) => (
-    <input ref={ref} onChange={onChange} value={value} {...props} />
-  )),
+  Input: React.forwardRef<HTMLInputElement, any>(
+    function Input({ onChange, value, ...props }, ref) {
+      return <input onChange={onChange} ref={ref} value={value} {...props} />;
+    }
+  ),
 }));
 
 describe("Pruebas Unitarias - InputPasswordStrength", () => {
   test("debe renderizar el estado inicial vacío correctamente", () => {
-    render(<InputPasswordStrength value="" onChange={vi.fn()} />);
+    render(<InputPasswordStrength onChange={vi.fn()} value="" />);
 
     // Comprobamos el texto informativo base
     expect(screen.getByText("Enter a password. Must contain:")).toBeInTheDocument();
@@ -30,7 +33,7 @@ describe("Pruebas Unitarias - InputPasswordStrength", () => {
 
   test("debe actualizar la puntuación y el indicador visual con una contraseña débil", () => {
     // Cumple solo con "At least 1 number" (score = 1)
-    render(<InputPasswordStrength value="123" onChange={vi.fn()} />);
+    render(<InputPasswordStrength onChange={vi.fn()} value="123" />);
 
     expect(screen.getByText("Weak password. Must contain:")).toBeInTheDocument();
 
@@ -43,7 +46,7 @@ describe("Pruebas Unitarias - InputPasswordStrength", () => {
 
   test("debe alcanzar el estado máximo (fuerte) si cumple todas las expresiones regulares", () => {
     // Cumple los 4 requisitos de contraseña segura
-    render(<InputPasswordStrength value="Password123!" onChange={vi.fn()} />);
+    render(<InputPasswordStrength onChange={vi.fn()} value="Password123!" />);
 
     expect(screen.getByText("Strong password. Must contain:")).toBeInTheDocument();
 
@@ -64,7 +67,7 @@ describe("Pruebas Unitarias - InputPasswordStrength", () => {
 
   test("debe disparar el callback onChange al escribir en el input", () => {
     const handleChange = vi.fn();
-    render(<InputPasswordStrength value="" onChange={handleChange} />);
+    render(<InputPasswordStrength onChange={handleChange} value="" />);
 
     const input = screen.getByPlaceholderText("Password");
     fireEvent.change(input, { target: { value: "A" } });

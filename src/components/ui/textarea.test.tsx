@@ -1,7 +1,7 @@
+import { describe, test, expect, vi } from "vitest";
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi } from "vitest";
 
 import { Textarea } from "./textarea";
 
@@ -41,7 +41,7 @@ describe("Pruebas Unitarias - Componente Textarea", () => {
   });
 
   test("debe concatenar clases CSS externas personalizadas usando la utilidad cn", () => {
-    render(<Textarea data-testid="textarea-cn" className="resize-none border-red-500 p-8" />);
+    render(<Textarea className="resize-none border-red-500 p-8" data-testid="textarea-cn" />);
     
     const textarea = screen.getByTestId("textarea-cn");
     
@@ -60,10 +60,10 @@ describe("Pruebas Unitarias - Componente Textarea", () => {
   test("debe propagar atributos HTML nativos adicionales del elemento (...props)", () => {
     render(
       <Textarea 
-        maxLength={100} 
-        rows={4} 
         id="custom-textarea-id" 
+        maxLength={100} 
         readOnly 
+        rows={4} 
       />
     );
     

@@ -1,7 +1,6 @@
-import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import "@testing-library/jest-dom";
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
+import "@testing-library/jest-dom";
 
 // 1. Mock obligatorio de ResizeObserver para componentes interactivos de Radix UI
 beforeEach(() => {
@@ -28,10 +27,10 @@ describe("Pruebas Unitarias - Componente SimpleSelect", () => {
   test("debe renderizar el placeholder de forma correcta si no se pasa un valor inicial", () => {
     render(
       <SimpleSelect
-        value=""
         onValueChange={vi.fn()}
         options={mockOptions}
         placeholder="Selecciona una fruta"
+        value=""
       />
     );
 
@@ -42,10 +41,10 @@ describe("Pruebas Unitarias - Componente SimpleSelect", () => {
   test("debe mostrar la etiqueta (label) de la opción seleccionada por defecto", () => {
     render(
       <SimpleSelect
-        value="banana"
         onValueChange={vi.fn()}
         options={mockOptions}
         placeholder="Selecciona una fruta"
+        value="banana"
       />
     );
 
@@ -59,10 +58,10 @@ describe("Pruebas Unitarias - Componente SimpleSelect", () => {
     
     render(
       <SimpleSelect
-        value="apple"
+        aria-label="Selector de frutas"
         onValueChange={handleValueChange}
         options={mockOptions}
-        aria-label="Selector de frutas"
+        value="apple"
       />
     );
 
@@ -90,11 +89,11 @@ describe("Pruebas Unitarias - Componente SimpleSelect", () => {
 
     render(
       <SimpleSelect
-        value="apple"
+        aria-label="Selector Deshabilitado"
+        disabled={true}
         onValueChange={handleValueChange}
         options={mockOptions}
-        disabled={true}
-        aria-label="Selector Deshabilitado"
+        value="apple"
       />
     );
 
@@ -114,11 +113,11 @@ describe("Pruebas Unitarias - Componente SimpleSelect", () => {
   test("debe concatenar clases CSS externas personalizadas en el Trigger usando la utilidad cn", () => {
     render(
       <SimpleSelect
-        value="apple"
+        aria-label="Selector Estilos"
+        className="custom-border-test bg-red-500"
         onValueChange={vi.fn()}
         options={mockOptions}
-        className="custom-border-test bg-red-500"
-        aria-label="Selector Estilos"
+        value="apple"
       />
     );
 

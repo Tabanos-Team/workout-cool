@@ -1,7 +1,6 @@
-import React from "react";
+import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 
 // 1. Configuración de mocks del entorno virtual (JSDOM)
 beforeEach(() => {
@@ -26,21 +25,21 @@ import { Slider } from "./slider";
 describe("Pruebas Unitarias - Componente Slider", () => {
 
   test("debe renderizar el control deslizante (Track y Range) con sus estilos base por defecto", () => {
-    const { container } = render(<Slider defaultValue={[50]} data-testid="slider-root" />);
+    const { container } = render(<Slider data-testid="slider-root" defaultValue={[50]} />);
     
     const sliderRoot = screen.getByTestId("slider-root");
     expect(sliderRoot).toBeInTheDocument();
     expect(sliderRoot).toHaveClass("relative", "flex", "w-full", "touch-none");
 
     // Verifica que se dibuje el número correcto de controladores (Thumbs)
-    const thumbs = container.querySelectorAll('[class*="cursor-ew-resize"]');
+    const thumbs = container.querySelectorAll("[class*=\"cursor-ew-resize\"]");
     expect(thumbs.length).toBe(1);
   });
 
   test("debe permitir múltiples thumbs si se inicializa con un arreglo de varios valores", () => {
     const { container } = render(<Slider defaultValue={[20, 80]} />);
     
-    const thumbs = container.querySelectorAll('[class*="cursor-ew-resize"]');
+    const thumbs = container.querySelectorAll("[class*=\"cursor-ew-resize\"]");
     expect(thumbs.length).toBe(2);
   });
 
@@ -48,7 +47,7 @@ describe("Pruebas Unitarias - Componente Slider", () => {
     const handleValueChange = vi.fn();
     const { container } = render(<Slider defaultValue={[40]} onValueChange={handleValueChange} />);
     
-    const sliderRoot = container.querySelector('[class*="touch-none"]');
+    const sliderRoot = container.querySelector("[class*=\"touch-none\"]");
     expect(sliderRoot).toBeInTheDocument();
 
     if (sliderRoot) {
@@ -93,8 +92,8 @@ describe("Pruebas Unitarias - Componente Slider", () => {
     render(
       <Slider 
         defaultValue={[30]} 
-        showTooltip={true} 
-        orientation="vertical"
+        orientation="vertical" 
+        showTooltip={true}
       />
     );
 
@@ -109,7 +108,7 @@ describe("Pruebas Unitarias - Componente Slider", () => {
   });
 
   test("debe concatenar clases personalizadas externas usando la utilidad cn", () => {
-    render(<Slider defaultValue={[10]} className="custom-slider-layout mt-10" data-testid="styled-slider" />);
+    render(<Slider className="custom-slider-layout mt-10" data-testid="styled-slider" defaultValue={[10]} />);
     
     const sliderRoot = screen.getByTestId("styled-slider");
     expect(sliderRoot).toHaveClass("custom-slider-layout", "mt-10", "relative");

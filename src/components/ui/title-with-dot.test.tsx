@@ -1,7 +1,6 @@
-import React from "react";
+import { describe, test, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect } from "vitest";
 
 import { TitleWithDot } from "./title-with-dot";
 
@@ -27,7 +26,7 @@ describe("Pruebas Unitarias - Componente TitleWithDot", () => {
   });
 
   test("debe combinar limpiamente las clases externas en el contenedor principal usando cn", () => {
-    render(<TitleWithDot title="Custom Classes" className="mt-10 max-w-xl" data-testid="title-wrapper" />);
+    render(<TitleWithDot className="mt-10 max-w-xl" data-testid="title-wrapper" title="Custom Classes" />);
 
     // Seleccionamos el wrapper por medio del text-id temporal o buscando el contenedor del h3
     const wrapper = screen.getByRole("heading", { name: "Custom Classes" }).parentElement;

@@ -1,17 +1,15 @@
+import { describe, test, expect, vi } from "vitest";
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi } from "vitest";
 
 // 1. Mockeamos @radix-ui/react-label para que devuelva una etiqueta <label> nativa de HTML
 vi.mock("@radix-ui/react-label", () => {
   return {
     Root: React.forwardRef<HTMLLabelElement, React.LabelHTMLAttributes<HTMLLabelElement>>(
-      ({ children, className, ...props }, ref) => (
-        <label ref={ref} className={className} {...props}>
-          {children}
-        </label>
-      )
+      function Root({ children, className, ...props }, ref) {
+        return <label className={className} ref={ref} {...props}>{children}</label>;
+      }
     ),
   };
 });

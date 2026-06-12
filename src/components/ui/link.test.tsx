@@ -1,18 +1,16 @@
+import { describe, test, expect, vi } from "vitest";
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi } from "vitest";
 
 // 1. Mockeamos 'next/link' para que renderice un elemento <a> ordinario
 vi.mock("next/link", () => {
   return {
     __esModule: true,
     default: React.forwardRef<HTMLAnchorElement, any>(
-      ({ children, className, href, ...props }, ref) => (
-        <a ref={ref} className={className} href={href} {...props}>
-          {children}
-        </a>
-      )
+      function NextLink({ children, className, href, ...props }, ref) {
+        return <a className={className} href={href} ref={ref} {...props}>{children}</a>;
+      }
     ),
   };
 });
@@ -63,7 +61,7 @@ describe("Pruebas Unitarias - Componente Link", () => {
   });
 
   test("debe concatenar clases personalizadas externas usando cn", () => {
-    render(<Link href="/custom" className="font-bold my-custom-class">Custom</Link>);
+    render(<Link className="font-bold my-custom-class" href="/custom">Custom</Link>);
 
     const linkElement = screen.getByRole("link", { name: "Custom" });
     expect(linkElement).toHaveClass("link", "text-base", "font-bold", "my-custom-class");

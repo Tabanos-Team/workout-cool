@@ -1,8 +1,7 @@
-import React from "react";
-import { render, fireEvent, waitFor } from "@testing-library/react";
-import "@testing-library/jest-dom";
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest";
 import * as NProgress from "nprogress";
+import { render, fireEvent } from "@testing-library/react";
+import "@testing-library/jest-dom";
 
 // 1. Mockeamos por completo la librería externa nprogress
 vi.mock("nprogress", () => ({
@@ -59,11 +58,11 @@ describe("Pruebas Unitarias - Componente NextTopLoader", () => {
   test("debe configurar NProgress con propiedades personalizadas pasadas por props", () => {
     render(
       <NextTopLoader
-        showSpinner={false}
         crawl={false}
         crawlSpeed={500}
-        initialPosition={0.2}
         easing="linear"
+        initialPosition={0.2}
+        showSpinner={false}
         speed={400}
       />
     );
@@ -102,6 +101,6 @@ describe("Pruebas Unitarias - Componente NextTopLoader", () => {
     expect(NProgress.start).toHaveBeenCalled();
     expect(NProgress.done).toHaveBeenCalled();
 
-    document.body.removeChild
-    });
+    document.body.removeChild(anchor);
+  });
 });

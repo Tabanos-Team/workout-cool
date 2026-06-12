@@ -1,8 +1,9 @@
+import { z } from "zod";
+import { describe, test, expect, vi } from "vitest";
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect, vi } from "vitest";
-import { z } from "zod";
+
 import { Form, FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage, useZodForm, useFormField } from "./form";
 
 // Mockeamos la internacionalización de clientes
@@ -13,7 +14,9 @@ vi.mock("locales/client", () => ({
 // Mockeamos el subcomponente Label local si es que cuenta con un wrapper primitivo pesado
 vi.mock("./label", () => ({
   Label: React.forwardRef<HTMLLabelElement, React.ComponentPropsWithoutRef<"label">>(
-    ({ children, ...props }, ref) => <label ref={ref} {...props}>{children}</label>
+    function Label({ children, ...props }, ref) {
+      return <label ref={ref} {...props}>{children}</label>;
+    }
   ),
 }));
 
@@ -29,7 +32,7 @@ const TestFormWrapper = ({ onSubmitMock }: { onSubmitMock: any }) => {
   });
 
   return (
-    <Form form={form} onSubmit={onSubmitMock} data-testid="form-root">
+    <Form data-testid="form-root" form={form} onSubmit={onSubmitMock}>
       <FormField
         control={form.control}
         name="username"
@@ -96,7 +99,7 @@ describe("Pruebas Unitarias e Integración - Componente Form", () => {
     const DummyForm = () => {
       const form = useZodForm({ schema: testSchema, defaultValues: { username: "" } });
       return (
-        <Form form={form} onSubmit={vi.fn()} disabled={true}>
+        <Form disabled={true} form={form} onSubmit={vi.fn()}>
           <input data-testid="inner-input" />
         </Form>
       );

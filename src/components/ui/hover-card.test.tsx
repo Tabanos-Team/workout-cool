@@ -1,7 +1,7 @@
-import React from "react";
+import { describe, test, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { describe, test, expect } from "vitest";
+
 import { HoverCard, HoverCardTrigger, HoverCardContent } from "./hover-card";
 
 describe("Pruebas Unitarias - HoverCard (Radix Primitives)", () => {
