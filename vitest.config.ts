@@ -1,16 +1,23 @@
-import { defineConfig } from 'vitest/config';
-import path from 'path';
+import { fileURLToPath } from "url";
+import path from "path";
+
+import { defineConfig } from "vitest/config";
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const __filename = fileURLToPath(import.meta.url);
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   test: {
-    environment: 'jsdom',
+    environment: "jsdom",
     globals: true,
-    setupFiles: ['./src/test/setup.ts'],
+    setupFiles: ["./src/test/setup.ts"],
 
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'html', 'json'],
-      reportsDirectory: './coverage',
+      provider: "v8",
+      reporter: ["text", "html", "json"],
+      reportsDirectory: "./coverage",
 
       thresholds: {
         lines: 70,
@@ -22,9 +29,16 @@ export default defineConfig({
   },
 
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-      'locales': path.resolve(__dirname, './locales')
-    }
+    alias: [
+      { find: "@public", replacement: path.resolve(__dirname, "./public") },
+      // Captura exactamente cualquier importación que empiece con "@/locales/" y la redirige a la carpeta raíz locales
+      { find: /^@\/locales\/(.*)/, replacement: path.resolve(__dirname, "./locales/$1") },
+      
+      // Captura todo lo demás que empiece con "@/ " (como components, ui, etc.) hacia la carpeta src
+      { find: /^@\/(.*)/, replacement: path.resolve(__dirname, "./src/$1") },
+      
+      // Respaldo por si acaso queda alguna importación antigua sin arroba
+      { find: "locales", replacement: path.resolve(__dirname, "./locales") }
+    ]
   }
 });

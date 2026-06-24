@@ -139,6 +139,7 @@ export function NutripureAffiliateBanner({ context = "general", position = "midd
         </div>
       </div>
 
+      {/* eslint-disable-next-line react/no-unknown-property */}
       <style jsx>{`
         .responsive-nutripure-container {
           width: 100%;
