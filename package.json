@@ -21,6 +21,8 @@
     "migrate:prod": "env-cmd -f .env.production prisma migrate deploy",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:integration:watch": "vitest --config vitest.integration.config.ts",
     "test:coverage": "vitest run --coverage"
   },
   "resolutions": {

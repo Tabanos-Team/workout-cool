@@ -12,6 +12,7 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
+    exclude: ["src/test/integration/**", "node_modules/**", "dist/**", ".next/**"],
     setupFiles: ["./src/test/setup.ts"],
 
     coverage: {
