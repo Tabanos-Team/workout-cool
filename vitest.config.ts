@@ -12,7 +12,15 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
-    exclude: ["src/test/integration/**", "node_modules/**", "dist/**", ".next/**"],
+    exclude: [
+      "src/test/integration/**",
+      "e2e/**",
+      "playwright-report/**",
+      "test-results/**",
+      "node_modules/**",
+      "dist/**",
+      ".next/**"
+    ],
     setupFiles: ["./src/test/setup.ts"],
 
     coverage: {

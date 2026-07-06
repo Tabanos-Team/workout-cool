@@ -34,7 +34,7 @@ Nota importante: en este repositorio los endpoints de App Router están en `app/
 - Pruebas unitarias existentes con Vitest.
 - Pruebas de integración existentes del LAB 08.
 - Diseño de pruebas de sistema para flujos completos.
-- Diseño de pruebas E2E con Playwright como herramienta sugerida.
+- Pruebas E2E iniciales con Playwright para páginas públicas y APIs públicas.
 - Diseño de colecciones Postman/Newman para pruebas manuales y automatizables.
 - Revisión del flujo CI/CD actual con GitHub Actions y Vercel.
 - Definición de criterios de aceptación para QA.
@@ -46,7 +46,7 @@ Nota importante: en este repositorio los endpoints de App Router están en `app/
 - Pruebas destructivas sobre proveedores externos en producción.
 - Pruebas de carga de alto volumen.
 - Pruebas de seguridad ofensiva avanzadas.
-- Automatización completa de E2E si no se instala Playwright.
+- Automatización completa de E2E autenticado; inicialmente se cubren smoke tests públicos.
 - Automatización completa de Postman si no se instala Newman.
 
 ## 4. Diferencia entre tipos de prueba
@@ -246,15 +246,15 @@ Nota importante: en este repositorio los endpoints de App Router están en `app/
 | `pnpm test:coverage` | Existente | Coverage V8 |
 | `pnpm test:integration` | Existente | Integración HITO 3 sobre Auth/User, Workout, Exercises, Programs y Premium |
 | `pnpm test:integration:watch` | Existente | Integración en watch |
+| `pnpm test:e2e` | Existente | Playwright E2E smoke tests |
+| `pnpm test:e2e:ui` | Existente | Playwright E2E en modo UI |
 
 ### 9.2 Scripts sugeridos
 
-Estos scripts no están implementados aún, pero se recomiendan para completar HITO 3:
+Estos scripts son mejoras pendientes o complementarias para completar HITO 3:
 
 | Script sugerido | Objetivo | Requiere |
 |-----------------|----------|----------|
-| `test:e2e` | Ejecutar Playwright | Instalar `@playwright/test` |
-| `test:e2e:ui` | Depurar E2E visualmente | Playwright |
 | `test:postman` | Ejecutar colección Postman con Newman | Instalar `newman` |
 | `test:ci` | Ejecutar lint, unitarias, integración y build | Ajuste de scripts |
 
@@ -262,8 +262,6 @@ Ejemplo futuro:
 
 ```json
 {
-  "test:e2e": "playwright test",
-  "test:e2e:ui": "playwright test --ui",
   "test:postman": "newman run postman/workoutcool.postman_collection.json -e postman/qa.postman_environment.json"
 }
 ```
@@ -277,6 +275,7 @@ pnpm lint
 pnpm test
 pnpm test:coverage
 pnpm test:integration
+pnpm test:e2e
 pnpm build
 ```
 
@@ -389,7 +388,7 @@ El HITO 3 se considera completado cuando:
 | DB QA compartida puede tener datos residuales | Resultados no deterministas | Usar prefijos `hito3-` y limpieza por prueba |
 | Webhooks requieren firmas válidas | Dificulta pruebas manuales | Usar Stripe CLI y payloads sandbox |
 | Checkout real no debe ejecutarse en producción | Riesgo de transacciones reales | Usar staging/mocks/proveedor sandbox |
-| E2E aún no está instalado | No hay automatización navegador | Proponer Playwright |
+| E2E depende de navegadores Playwright instalados | Puede fallar si Chromium no existe en local/CI | Ejecutar `pnpm exec playwright install chromium` |
 | Postman no está versionado | Menor trazabilidad | Crear carpeta `postman/` |
 | Secrets en CI | Riesgo de exposición | Usar GitHub Secrets y no subir credenciales |
 | Pruebas de integración requieren red y DB | Pueden fallar por disponibilidad externa | Usar DB test estable o PostgreSQL ephemeral |
@@ -433,10 +432,10 @@ Pasos:
 
 ## 18. Recomendaciones técnicas
 
-1. Agregar Playwright para E2E crítico.
+1. Ampliar Playwright desde smoke tests públicos hacia flujos autenticados críticos.
 2. Agregar Newman si se decide versionar Postman.
-3. Agregar `pnpm test:integration` al workflow CI con base de datos QA.
-4. Publicar reportes de coverage como artifacts de GitHub Actions.
+3. Agregar `pnpm test:integration` y `pnpm test:e2e` al workflow CI con base de datos QA.
+4. Publicar reportes de coverage y Playwright como artifacts de GitHub Actions.
 5. Mantener datos de prueba con prefijos únicos y limpieza automática.
 6. Separar secretos QA de secretos productivos.
 7. Mantener la suite actual de integración como base y ampliarla hacia webhooks/premium checkout en sandbox.

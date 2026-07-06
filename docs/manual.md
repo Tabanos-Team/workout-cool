@@ -39,7 +39,7 @@ Opcional:
 | Herramienta | Uso |
 |-------------|-----|
 | Newman | Automatizar colecciones Postman |
-| Playwright | Automatizar E2E |
+| Playwright | Automatizar E2E, ya configurado en el proyecto |
 | Stripe CLI | Probar webhooks Stripe en sandbox |
 
 ## 4. Variables de entorno en Postman
@@ -374,5 +374,46 @@ Los casos manuales más importantes deben convertirse gradualmente en automatiza
 | Exercises filters | Vitest integración |
 | Premium status | Vitest integración |
 | Tools públicos | Playwright |
+
+## 14. Ejecución E2E con Playwright
+
+El proyecto incluye Playwright para smoke tests de páginas públicas y APIs públicas.
+
+Comando:
+
+```bash
+pnpm test:e2e
+```
+
+Modo UI:
+
+```bash
+pnpm test:e2e:ui
+```
+
+Si el ambiente no tiene navegador Chromium instalado:
+
+```bash
+pnpm exec playwright install chromium
+```
+
+Los reportes se generan en:
+
+```txt
+playwright-report/index.html
+```
+
+Casos cubiertos inicialmente:
+
+- `/en`
+- `/en/programs`
+- `/en/premium`
+- `/en/tools`
+- `/en/tools/bmi-calculator`
+- `/en/tools/calorie-calculator`
+- `/en/tools/heart-rate-zones`
+- `/api/programs`
+- `/api/premium/plans?region=US`
+- `/api/webhooks/revenuecat`
 
 Este manual queda listo para ejecutarse y copiarse a GitHub Wiki como guía operativa del HITO 3.
