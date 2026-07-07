@@ -3,8 +3,24 @@ import { NextRequest, NextResponse } from "next/server";
 import { getMobileCompatibleSession } from "@/shared/api/mobile-auth";
 import { getWorkoutSessionsAction } from "@/features/workout-session/actions/get-workout-sessions.action";
 
+async function applyLab08Delay(request: NextRequest) {
+  if (process.env.LAB08_INTEGRATION_TESTS !== "true") {
+    return;
+  }
+
+  const delayMs = Number(request.headers.get("x-lab08-delay-ms") || 0);
+
+  if (!Number.isFinite(delayMs) || delayMs <= 0) {
+    return;
+  }
+
+  await new Promise((resolve) => setTimeout(resolve, Math.min(delayMs, 5_000)));
+}
+
 export async function GET(request: NextRequest) {
   try {
+    await applyLab08Delay(request);
+
     // Check authentication
     const session = await getMobileCompatibleSession(request);
 

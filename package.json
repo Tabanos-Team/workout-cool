@@ -21,6 +21,10 @@
     "migrate:prod": "env-cmd -f .env.production prisma migrate deploy",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:integration:watch": "vitest --config vitest.integration.config.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "test:coverage": "vitest run --coverage"
   },
   "resolutions": {
@@ -116,6 +120,7 @@
     "@eslint/js": "^9.28.0",
     "@next/bundle-analyzer": "^16.2.1",
     "@next/eslint-plugin-next": "^16.2.1",
+    "@playwright/test": "^1.61.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -158,6 +163,5 @@
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.8"
   },
-  
   "packageManager": "pnpm@11.0.8+sha512.4c4097e1dd2d42372c4e7fa5a791ff28fc75a484c7ac192e64b1df0fdef17594ba982f9b4fed9adfb3c757846f565b799b2763fb3733d1de1bcb82cf46684912"
 }
