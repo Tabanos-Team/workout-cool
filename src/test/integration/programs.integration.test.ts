@@ -44,6 +44,35 @@ interface ProgramDetail {
   slug: string;
   title: string;
   totalEnrollments: number;
+  coaches: Array<{ id: string }>;
+  weeks: Array<{
+    sessions: Array<{
+      slug: string;
+      totalExercises: number;
+    }>;
+  }>;
+}
+
+interface ProgramSessionDetail {
+  session: {
+    id: string;
+    slug: string;
+    exercises: Array<{
+      exerciseId: string;
+      suggestedSets: Array<{
+        setIndex: number;
+        types: string[];
+        valuesInt: number[];
+      }>;
+    }>;
+  };
+  program: {
+    id: string;
+    slug: string;
+  };
+  week: {
+    weekNumber: number;
+  };
 }
 
 interface EnrollmentResponse {
@@ -70,7 +99,7 @@ describe("HITO 3 integration: exercises and programs API", () => {
     await cleanupLab08Data(runId);
     identity = await createAuthenticatedUser(runId);
     exercise = await createAttributedTestExercise(runId);
-    program = await createPublishedTestProgram(runId);
+    program = await createPublishedTestProgram(runId, exercise.id);
   });
 
   afterAll(async () => {
@@ -102,6 +131,8 @@ describe("HITO 3 integration: exercises and programs API", () => {
   });
 
   it("lists public programs and fetches a program detail by slug", async () => {
+    expect(program.sessionSlug).toBeDefined();
+    const sessionSlug = program.sessionSlug!;
     const list = await apiRequest<ProgramListItem[]>("/api/programs");
 
     expect(list.response.status).toBe(200);
@@ -112,6 +143,25 @@ describe("HITO 3 integration: exercises and programs API", () => {
     expect(detail.response.status).toBe(200);
     expect(detail.body.id).toBe(program.id);
     expect(detail.body.slug).toBe(program.slug);
+    expect(detail.body.coaches).toHaveLength(1);
+    expect(detail.body.weeks[0]?.sessions[0]?.slug).toBe(sessionSlug);
+    expect(detail.body.weeks[0]?.sessions[0]?.totalExercises).toBe(1);
+  });
+
+  it("fetches a program session detail with exercises and suggested sets", async () => {
+    expect(program.sessionSlug).toBeDefined();
+    const sessionSlug = program.sessionSlug!;
+    const detail = await apiRequest<ProgramSessionDetail>(`/api/programs/${program.slug}/sessions/${sessionSlug}`);
+
+    expect(detail.response.status).toBe(200);
+    expect(detail.body.program.id).toBe(program.id);
+    expect(detail.body.session.slug).toBe(sessionSlug);
+    expect(detail.body.week.weekNumber).toBe(1);
+    expect(detail.body.session.exercises).toHaveLength(1);
+    expect(detail.body.session.exercises[0]?.exerciseId).toBe(exercise.id);
+    expect(detail.body.session.exercises[0]?.suggestedSets).toHaveLength(2);
+    expect(detail.body.session.exercises[0]?.suggestedSets[0]?.types).toEqual(["BODYWEIGHT", "REPS"]);
+    expect(detail.body.session.exercises[0]?.suggestedSets[0]?.valuesInt).toEqual([0, 10]);
   });
 
   it("enrolls an authenticated user in a program and reads enrollment status", async () => {
