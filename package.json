@@ -23,7 +23,10 @@
     "test:watch": "vitest",
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "test:integration:watch": "vitest --config vitest.integration.config.ts",
+    "test:integration:programs:deployed": "TEST_SERVER_URL=https://workout-cool-ten.vercel.app vitest run --config vitest.integration.config.ts src/test/integration/programs.integration.test.ts",
+    "test:integration:programs:deployed:keep": "TEST_SERVER_URL=https://workout-cool-ten.vercel.app TEST_RUN_ID=hito3-programs-deployed KEEP_INTEGRATION_DATA=true vitest run --config vitest.integration.config.ts src/test/integration/programs.integration.test.ts",
     "test:e2e": "playwright test",
+    "test:e2e:programs:deployed": "PLAYWRIGHT_BASE_URL=https://workout-cool-ten.vercel.app playwright test e2e/programs.spec.ts",
     "test:e2e:ui": "playwright test --ui",
     "test:coverage": "vitest run --coverage"
   },
