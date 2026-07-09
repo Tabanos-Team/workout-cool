@@ -6,11 +6,79 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  CI: true
+  NEXT_TELEMETRY_DISABLED: 1
+  BETTER_AUTH_SECRET: test_secret_key_32_chars_minimum
+  GOOGLE_CLIENT_ID: test_client_id
+  GOOGLE_CLIENT_SECRET: test_client_secret
+  RESEND_API_KEY: re_test_key
+  OPENPANEL_SECRET_KEY: test_secret
+  NEXT_PUBLIC_OPENPANEL_CLIENT_ID: test_client_id
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: test_client_id
+  NEXT_PUBLIC_STRIPE_PRICE_MONTHLY_EU: test_price_monthly
+  NEXT_PUBLIC_STRIPE_PRICE_YEARLY_EU: test_price_yearly
+  NEXT_PUBLIC_STRIPE_PRICE_MONTHLY_US: test_price_monthly
+  NEXT_PUBLIC_STRIPE_PRICE_YEARLY_US: test_price_yearly
+  NEXT_PUBLIC_STRIPE_PRICE_MONTHLY_LATAM: test_price_monthly
+  NEXT_PUBLIC_STRIPE_PRICE_YEARLY_LATAM: test_price_yearly
+  NEXT_PUBLIC_STRIPE_PRICE_MONTHLY_BR: test_price_monthly
+  NEXT_PUBLIC_STRIPE_PRICE_YEARLY_BR: test_price_yearly
+  NEXT_PUBLIC_STRIPE_PRICE_MONTHLY_RU: test_price_monthly
+  NEXT_PUBLIC_STRIPE_PRICE_YEARLY_RU: test_price_yearly
+  NEXT_PUBLIC_STRIPE_PRICE_MONTHLY_CN: test_price_monthly
+  NEXT_PUBLIC_STRIPE_PRICE_YEARLY_CN: test_price_yearly
+  STRIPE_SECRET_KEY: test_secret_key
+  REVENUECAT_SECRET_KEY: test_secret_key
+  REVENUECAT_WEBHOOK_SECRET: test_webhook_secret
+  STRIPE_WEBHOOK_SECRET: test_webhook_secret
+  NEXT_PUBLIC_SHOW_ADS: false
+  NEXT_PUBLIC_AD_CLIENT: test_client_id
+  NEXT_PUBLIC_VERTICAL_LEFT_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_VERTICAL_RIGHT_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_EQUIPMENT_SELECTION_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_EXERCISE_SELECTION_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_MUSCLE_SELECTION_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_TOP_WORKOUT_SESSION_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_BOTTOM_WORKOUT_SESSION_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_TOP_STEPPER_STEP_1_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_TOP_STEPPER_STEP_2_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_TOP_STEPPER_STEP_3_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_TOP_PROGRAMS_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_BOTTOM_PROGRAMS_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_TOP_TOOLS_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_BOTTOM_TOOLS_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_TOP_CALCULATOR_HUB_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_BOTTOM_CALCULATOR_HUB_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_TOP_PROGRAM_DETAILS_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_BOTTOM_PROGRAM_DETAILS_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_TOP_PROFILE_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_IN_ARTICLE_BMI_1_AD_SLOT: 1234567890
+  NEXT_PUBLIC_IN_ARTICLE_BMI_2_AD_SLOT: 1234567890
+  NEXT_PUBLIC_TOP_BMI_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_BOTTOM_BMI_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_TOP_HEART_ZONES_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_BOTTOM_HEART_ZONES_BANNER_AD_SLOT: 1234567890
+  NEXT_PUBLIC_IN_ARTICLE_HEART_ZONES_AD_SLOT_1: 1234567890
+  NEXT_PUBLIC_IN_ARTICLE_HEART_ZONES_AD_SLOT_2: 1234567890
+  NEXT_PUBLIC_IN_ARTICLE_HEART_ZONES_AD_SLOT_3: 1234567890
+  NEXT_PUBLIC_TOP_MIFFLIN_ST_JEOR_CALCULATOR_AD_SLOT: 1234567890
+  NEXT_PUBLIC_BOTTOM_CALORIE_CALCULATOR_AD_SLOT: 1234567890
+  NEXT_PUBLIC_TOP_OXFORD_CALCULATOR_AD_SLOT: 1234567890
+  NEXT_PUBLIC_BOTTOM_OXFORD_CALCULATOR_AD_SLOT: 1234567890
+  NEXT_PUBLIC_TOP_HARRIS_BENEDICT_CALCULATOR_AD_SLOT: 1234567890
+  NEXT_PUBLIC_TOP_KATCH_MCARDLE_CALCULATOR_AD_SLOT: 1234567890
+  NEXT_PUBLIC_TOP_CUNNINGHAM_CALCULATOR_AD_SLOT: 1234567890
+  NEXT_PUBLIC_TOP_CALORIE_CALCULATOR_COMPARISON_AD_SLOT: 1234567890
+  NEXT_PUBLIC_BOTTOM_CALORIE_CALCULATOR_COMPARISON_AD_SLOT: 1234567890
+
 jobs:
-  lint:
+  quality:
+    name: Lint, unit tests and coverage
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -19,11 +87,9 @@ jobs:
 
       - name: Setup Node with pnpm cache
         uses: actions/setup-node@v4
-        with: 
+        with:
           node-version: "22"
-          cache: "pnpm" 
-      
-          
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -34,16 +100,44 @@ jobs:
       - name: Run linting
         run: pnpm lint
 
-
-      - name: Run tests
+      - name: Run unit tests
         run: pnpm test
 
       - name: Run coverage
         run: pnpm test:coverage
-  build:
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage
+          if-no-files-found: ignore
+
+  integration:
+    name: API integration tests
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: workoutcool_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/workoutcool_test
+      BETTER_AUTH_URL: http://127.0.0.1:3101
+      NEXT_PUBLIC_APP_URL: http://127.0.0.1:3101
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -52,12 +146,102 @@ jobs:
 
       - name: Setup Node with pnpm cache
         uses: actions/setup-node@v4
-        with: 
+        with:
           node-version: "22"
-          cache: "pnpm" 
-    
+          cache: "pnpm"
 
-    
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm prisma generate
+
+      - name: Apply database migrations
+        run: pnpm prisma migrate deploy
+
+      - name: Run integration tests
+        run: pnpm test:integration
+
+  e2e:
+    name: Playwright E2E tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: workoutcool_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/workoutcool_e2e
+      BETTER_AUTH_URL: http://127.0.0.1:3200
+      NEXT_PUBLIC_APP_URL: http://127.0.0.1:3200
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node with pnpm cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Generate Prisma client
+        run: pnpm prisma generate
+
+      - name: Apply database migrations
+        run: pnpm prisma migrate deploy
+
+      - name: Run Playwright tests
+        run: pnpm test:e2e
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          if-no-files-found: ignore
+
+  build:
+    name: Production build
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://user:password@localhost:5432/test_db
+      BETTER_AUTH_URL: http://localhost:3000
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node with pnpm cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -67,69 +251,3 @@ jobs:
 
       - name: Build project
         run: pnpm build
-        env:
-          BETTER_AUTH_URL: http://localhost:3000
-          DATABASE_URL: postgresql://user:password@localhost:5432/test_db
-          GOOGLE_CLIENT_ID: test_client_id
-          GOOGLE_CLIENT_SECRET: test_client_secret
-          RESEND_API_KEY: re_test_key
-          BETTER_AUTH_SECRET: test_secret_key_32_chars_minimum
-          OPENPANEL_SECRET_KEY: test_secret
-          NEXT_PUBLIC_OPENPANEL_CLIENT_ID: test_client_id
-          NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: test_client_id
-          NEXT_PUBLIC_STRIPE_PRICE_MONTHLY_EU: test_price_monthly
-          NEXT_PUBLIC_STRIPE_PRICE_YEARLY_EU: test_price_yearly
-          NEXT_PUBLIC_STRIPE_PRICE_MONTHLY_US: test_price_monthly
-          NEXT_PUBLIC_STRIPE_PRICE_YEARLY_US: test_price_yearly
-          NEXT_PUBLIC_STRIPE_PRICE_MONTHLY_LATAM: test_price_monthly
-          NEXT_PUBLIC_STRIPE_PRICE_YEARLY_LATAM: test_price_yearly
-          NEXT_PUBLIC_STRIPE_PRICE_MONTHLY_BR: test_price_monthly
-          NEXT_PUBLIC_STRIPE_PRICE_YEARLY_BR: test_price_yearly
-          NEXT_PUBLIC_STRIPE_PRICE_MONTHLY_RU: test_price_monthly
-          NEXT_PUBLIC_STRIPE_PRICE_YEARLY_RU: test_price_yearly
-          NEXT_PUBLIC_STRIPE_PRICE_MONTHLY_CN: test_price_monthly
-          NEXT_PUBLIC_STRIPE_PRICE_YEARLY_CN: test_price_yearly
-          NEXT_PUBLIC_APP_URL: http://localhost:3000
-          STRIPE_SECRET_KEY: test_secret_key
-          REVENUECAT_SECRET_KEY: test_secret_key
-          REVENUECAT_WEBHOOK_SECRET: test_webhook_secret
-          STRIPE_WEBHOOK_SECRET: test_webhook_secret
-          NEXT_PUBLIC_SHOW_ADS: false
-          NEXT_PUBLIC_AD_CLIENT: test_client_id
-          NEXT_PUBLIC_VERTICAL_LEFT_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_VERTICAL_RIGHT_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_EQUIPMENT_SELECTION_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_EXERCISE_SELECTION_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_MUSCLE_SELECTION_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_TOP_WORKOUT_SESSION_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_BOTTOM_WORKOUT_SESSION_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_TOP_STEPPER_STEP_1_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_TOP_STEPPER_STEP_2_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_TOP_STEPPER_STEP_3_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_TOP_PROGRAMS_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_BOTTOM_PROGRAMS_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_TOP_TOOLS_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_BOTTOM_TOOLS_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_TOP_CALCULATOR_HUB_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_BOTTOM_CALCULATOR_HUB_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_TOP_PROGRAM_DETAILS_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_BOTTOM_PROGRAM_DETAILS_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_TOP_PROFILE_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_IN_ARTICLE_BMI_1_AD_SLOT: 1234567890
-          NEXT_PUBLIC_IN_ARTICLE_BMI_2_AD_SLOT: 1234567890
-          NEXT_PUBLIC_TOP_BMI_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_BOTTOM_BMI_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_TOP_HEART_ZONES_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_BOTTOM_HEART_ZONES_BANNER_AD_SLOT: 1234567890
-          NEXT_PUBLIC_IN_ARTICLE_HEART_ZONES_AD_SLOT_1: 1234567890
-          NEXT_PUBLIC_IN_ARTICLE_HEART_ZONES_AD_SLOT_2: 1234567890
-          NEXT_PUBLIC_IN_ARTICLE_HEART_ZONES_AD_SLOT_3: 1234567890
-          NEXT_PUBLIC_TOP_MIFFLIN_ST_JEOR_CALCULATOR_AD_SLOT: 1234567890
-          NEXT_PUBLIC_BOTTOM_CALORIE_CALCULATOR_AD_SLOT: 1234567890
-          NEXT_PUBLIC_TOP_OXFORD_CALCULATOR_AD_SLOT: 1234567890
-          NEXT_PUBLIC_BOTTOM_OXFORD_CALCULATOR_AD_SLOT: 1234567890
-          NEXT_PUBLIC_TOP_HARRIS_BENEDICT_CALCULATOR_AD_SLOT: 1234567890
-          NEXT_PUBLIC_TOP_KATCH_MCARDLE_CALCULATOR_AD_SLOT: 1234567890
-          NEXT_PUBLIC_TOP_CUNNINGHAM_CALCULATOR_AD_SLOT: 1234567890
-          NEXT_PUBLIC_TOP_CALORIE_CALCULATOR_COMPARISON_AD_SLOT: 1234567890
-          NEXT_PUBLIC_BOTTOM_CALORIE_CALCULATOR_COMPARISON_AD_SLOT: 1234567890

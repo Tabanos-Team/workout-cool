@@ -27,7 +27,7 @@ El alcance actual permite afirmar que existe una base de calidad automatizada, e
 
 | Campo | Valor |
 |-------|-------|
-| Fecha de ejecución | 2026-07-06 |
+| Fecha de ejecución | 2026-07-08 |
 | Rama | Completar con rama usada |
 | Commit | Completar con hash de commit |
 | Responsable QA | Completar |
@@ -45,7 +45,7 @@ El alcance actual permite afirmar que existe una base de calidad automatizada, e
 | User profile/preferences | Parcial | Implementado | Pendiente | Pendiente | Aprobado parcialmente |
 | Workout sessions | Parcial | Implementado | Pendiente documentar Postman | Pendiente | Aprobado parcialmente |
 | Exercises | Parcial | Implementado | Pendiente | Pendiente | Aprobado parcialmente |
-| Programs | Parcial | Implementado | Pendiente | Pendiente | Aprobado parcialmente |
+| Programs | Parcial | Implementado con grafo completo y deploy Vercel | Bruno manual en ejecución | E2E Playwright aprobado | Aprobado |
 | Premium/billing | Parcial UI | Implementado para status/plans y rechazo controlado de checkout sin auth | Pendiente | Smoke público de plans | En progreso |
 | Webhooks Stripe/RevenueCat | No aplica unitario directo | Health check RevenueCat implementado | Pendiente controlado | Smoke público RevenueCat | En progreso |
 | Statistics | Parcial | Pendiente ampliar | Pendiente | Pendiente | En progreso |
@@ -99,13 +99,13 @@ Resultado:
 
 | Comando | Resultado | Estado |
 |---------|-----------|--------|
-| `pnpm test:coverage` | Completar con porcentajes generados | Pendiente de registrar en informe final |
+| `pnpm test:coverage` | Statements 94.28%, Branches 85.98%, Functions 91.69%, Lines 94.87% | Aprobado |
 
 Evidencia a adjuntar:
 
 - Captura de consola.
 - Captura de `coverage/index.html`.
-- Artifact de GitHub Actions si se publica.
+- Artifact `coverage-report` de GitHub Actions.
 
 ## 7. Resultados de pruebas de integración
 
@@ -123,12 +123,17 @@ Evidencia a adjuntar:
 
 | Comando | Resultado | Estado |
 |---------|-----------|--------|
-| `pnpm test:integration` | `5 passed`, `24 tests passed` | Aprobado |
+| `pnpm test:integration` | `5 passed`, `26 tests passed` | Aprobado |
 
 Salida representativa de endpoints ejercitados por la suite:
 
 ```txt
 GET /api/programs 200
+GET /api/programs/:slug 200
+GET /api/programs/:slug/sessions/:sessionSlug 200
+POST /api/programs/session-progress/start 200
+POST /api/programs/session-progress/:progressId/complete 200
+GET /api/programs/:slug/progress 200
 POST /api/auth/sign-up/email 200
 POST /api/workout-sessions/sync 200
 GET /api/workout-sessions/user/:userId 200
@@ -144,7 +149,7 @@ POST /api/premium/checkout 500
 GET /api/webhooks/revenuecat 200
 
 Test Files  5 passed (5)
-Tests       24 passed (24)
+Tests       26 passed (26)
 ```
 
 ### 7.3 Casos de integración ejecutados
@@ -163,9 +168,12 @@ Tests       24 passed (24)
 | INT-PREF-02 | User preferences | Negativo | Vitest + fetch | `weeklyFrequency: 8` | HTTP 400 | HTTP 400 | Aprobado | Log terminal |
 | INT-EXE-01 | Exercises | Integración | Vitest + fetch | Filtro `BODY_ONLY` + `CHEST` | HTTP 200 y ejercicio fixture | HTTP 200 | Aprobado | Log terminal |
 | INT-EXE-02 | Exercises | Negativo | Vitest + fetch | `limit=99` | HTTP 400 | HTTP 400 | Aprobado | Log terminal |
-| INT-PROG-01 | Programs | Integración | Vitest + fetch | Programa publicado fixture | Lista y detalle HTTP 200 | HTTP 200 | Aprobado | Log terminal |
-| INT-PROG-02 | Programs | Integración autenticada | Vitest + fetch | Enroll con cookie | Enrolamiento creado | HTTP 200 | Aprobado | Log terminal |
-| INT-PROG-03 | Programs | Negativo | Vitest + fetch | Enroll sin cookie | HTTP 401 | HTTP 401 | Aprobado | Log terminal |
+| INT-PROG-01 | Programs | Integración | Vitest + fetch | Programa publicado fixture | Lista y detalle HTTP 200 | HTTP 200 | Aprobado | Log verbose: `lists public programs... 614ms` |
+| INT-PROG-02 | Programs | Integración | Vitest + fetch | Sesión con ejercicio y sets sugeridos | HTTP 200 con ejercicios y `suggestedSets` | HTTP 200 | Aprobado | Log verbose: `fetches a program session detail... 414ms` |
+| INT-PROG-03 | Programs | Integración autenticada | Vitest + fetch | Enroll con cookie | Enrolamiento creado | HTTP 200 | Aprobado | Log verbose: `enrolls an authenticated user... 813ms` |
+| INT-PROG-04 | Programs | Integración end-to-end API | Vitest + fetch | Enroll -> start -> sync -> complete -> progress | Progreso completo y workout enlazado | HTTP 200, progreso 100% | Aprobado | Log verbose: `starts, syncs and completes... 5088ms` |
+| INT-PROG-05 | Programs | Validación DB | Prisma + Neon | Grafo completo del programa | Todas las relaciones persistidas | `programs`, `weeks`, `sessions`, `sets`, `progress`, `workout` validados | Aprobado | Aserciones Prisma en suite |
+| INT-PROG-06 | Programs | Negativo | Vitest + fetch | Enroll sin cookie y slug inexistente | HTTP 401 y HTTP 404 | HTTP 401/404 | Aprobado | Log verbose: `rejects unauthenticated... 691ms` |
 | INT-PREM-01 | Premium status | Integración | Vitest + fetch | Sin cookie | `isPremium: false` | HTTP 200 | Aprobado | Log terminal |
 | INT-PREM-02 | Premium status | Integración autenticada | Vitest + fetch | Usuario no premium | `isPremium: false`, count 0 | HTTP 200 | Aprobado | Log terminal |
 | INT-AUTH-01 | Auth custom | Integración | Vitest + fetch | Signup válido | HTTP 200 y usuario creado | HTTP 200 | Aprobado | Log terminal |
@@ -174,6 +182,69 @@ Tests       24 passed (24)
 | INT-BILL-01 | Billing | Negativo auth | Vitest + fetch | GET status sin cookie | HTTP 401 | HTTP 401 | Aprobado | Log terminal |
 | INT-PREM-03 | Premium checkout | Negativo auth | Vitest + fetch | Checkout sin cookie | Rechazo controlado | HTTP 500 actual, registrado para mejora a 401/403 | Aprobado con observación | Log terminal |
 | INT-WH-01 | RevenueCat webhook | Sistema/API health | Vitest + fetch | GET health | HTTP 200 | HTTP 200 | Aprobado | Log terminal |
+
+### 7.4 Resultado especifico del modulo Programs
+
+La suite `src/test/integration/programs.integration.test.ts` valida el grafo completo del modulo Programs contra API route, validacion, Prisma y PostgreSQL/Neon. Para evidencia desplegada se ejecuto contra Vercel con datos conservados en Neon mediante `KEEP_INTEGRATION_DATA=true`.
+
+Entidades cubiertas:
+
+| Entidad | Cobertura |
+|---------|-----------|
+| `programs` | Creacion de programa publicado, listado publico y detalle por slug |
+| `program_coaches` | Coach asociado incluido en detalle de programa |
+| `program_weeks` | Semana asociada al programa y orden de sesiones |
+| `program_sessions` | Detalle de sesion por slug y start de progreso |
+| `program_session_exercises` | Ejercicio asociado a la sesion del programa |
+| `program_suggested_sets` | Sets sugeridos incluidos y ordenados por `setIndex` |
+| `user_program_enrollments` | Inscripcion autenticada y estado de enrolamiento |
+| `user_session_progress` | Inicio y completado de sesion del programa |
+| `workout_sessions` | Sincronizacion de workout real enlazado a `user_session_progress.workoutSessionId` |
+
+Resultado ejecutado contra deploy:
+
+```txt
+pnpm test:integration:programs:deployed:keep
+
+Test Files  1 passed (1)
+Tests       8 passed (8)
+Duration    30.85s
+```
+
+Log terminal detallado con reporter verbose:
+
+| ID | Caso ejecutado | Log terminal | Estado |
+|----|----------------|--------------|--------|
+| INT-PROG-01 | `searches exercises by muscle and equipment through API validation and Prisma` | `✓ ... 824ms` | Aprobado |
+| INT-PROG-02 | `rejects invalid exercise query parameters with HTTP 400` | `✓ ... 306ms` | Aprobado |
+| INT-PROG-03 | `lists exercises from the public catalog with pagination metadata` | `✓ ... 715ms` | Aprobado |
+| INT-PROG-04 | `lists public programs and fetches a program detail by slug` | `✓ ... 614ms` | Aprobado |
+| INT-PROG-05 | `fetches a program session detail with exercises and suggested sets` | `✓ ... 414ms` | Aprobado |
+| INT-PROG-06 | `enrolls an authenticated user in a program and reads enrollment status` | `✓ ... 813ms` | Aprobado |
+| INT-PROG-07 | `starts, syncs and completes a program session through the deployed-compatible API flow` | `✓ ... 5088ms` | Aprobado |
+| INT-PROG-08 | `rejects unauthenticated program enrollment and missing program slugs` | `✓ ... 691ms` | Aprobado |
+
+Resumen del log:
+
+```txt
+Test Files  1 passed (1)
+Tests       8 passed (8)
+Start at    18:15:45
+Duration    28.69s
+```
+
+Casos especificos:
+
+| ID | Caso | Entidades principales | Resultado |
+|----|------|-----------------------|-----------|
+| INT-PROG-01 | Listar catalogo y detalle de programa | `programs`, `program_coaches`, `program_weeks`, `program_sessions` | Aprobado |
+| INT-PROG-02 | Obtener detalle de sesion con ejercicios y sets | `program_sessions`, `program_session_exercises`, `program_suggested_sets` | Aprobado |
+| INT-PROG-03 | Inscribirse y consultar estado | `user_program_enrollments`, `programs` | Aprobado |
+| INT-PROG-04 | Iniciar sesion de programa | `user_session_progress`, `program_sessions` | Aprobado |
+| INT-PROG-05 | Sincronizar workout real | `workout_sessions`, `workout_session_exercises`, `workout_sets` | Aprobado |
+| INT-PROG-06 | Completar sesion y validar progreso | `user_session_progress`, `user_program_enrollments`, `workout_sessions` | Aprobado |
+| INT-PROG-07 | Validar grafo completo directamente en DB | Todas las entidades anteriores | Aprobado |
+| INT-PROG-08 | Casos negativos de auth y slug inexistente | API Programs | Aprobado |
 
 ## 8. Resultados Postman
 
@@ -210,7 +281,8 @@ Resultado registrado:
 
 | Comando | Resultado | Estado |
 |---------|-----------|--------|
-| `pnpm test:e2e` | `22 passed` en Chromium desktop y mobile | Aprobado |
+| `pnpm test:e2e` | `26 passed` en Chromium desktop y mobile | Aprobado |
+| `pnpm test:e2e:programs:deployed` | `4 passed` contra Vercel en Chromium desktop y mobile | Aprobado |
 
 Casos E2E implementados inicialmente:
 
@@ -224,6 +296,44 @@ Casos E2E implementados inicialmente:
 | E2E-06 | API pública `/api/programs` desde browser context | Aprobado |
 | E2E-07 | API pública `/api/premium/plans` desde browser context | Aprobado |
 | E2E-08 | Health check `/api/webhooks/revenuecat` desde browser context | Aprobado |
+| E2E-PROG-01 | Catalogo `/en/programs` y detalle de programa | Aprobado |
+| E2E-PROG-02 | Pagina de sesion de programa y API anidada con ejercicios/sets | Aprobado |
+
+Resultado especifico de Playwright Programs:
+
+```txt
+pnpm test:e2e:programs:deployed
+
+Running 4 tests using 2 workers
+4 passed (9.8s)
+```
+
+Resultado local completo de Playwright:
+
+```txt
+pnpm test:e2e
+
+Running 26 tests using 6 workers
+26 passed (1.0m)
+```
+
+Tabla estilo reporte HTML de Playwright para Programs:
+
+| Proyecto | Archivo | Prueba | Resultado | Duracion |
+|----------|---------|--------|-----------|----------|
+| `chromium` | `e2e/programs.spec.ts` | `renders the public programs catalog and opens a program detail page` | Passed | 4.8s |
+| `mobile-chrome` | `e2e/programs.spec.ts` | `renders the public programs catalog and opens a program detail page` | Passed | 5.1s |
+| `chromium` | `e2e/programs.spec.ts` | `loads a program session page and validates nested program API data` | Passed | 3.1s |
+| `mobile-chrome` | `e2e/programs.spec.ts` | `loads a program session page and validates nested program API data` | Passed | 3.2s |
+
+Evidencia generada:
+
+| Evidencia | Ubicacion / referencia |
+|-----------|------------------------|
+| Reporte HTML Playwright | `playwright-report/index.html` |
+| Archivo E2E Programs | `e2e/programs.spec.ts` |
+| Comando | `pnpm test:e2e:programs:deployed` |
+| URL evaluada | `https://workout-cool-ten.vercel.app` |
 
 Observación técnica de la ejecución: durante navegación pública, React reportó un mismatch de hidratación en `src/features/layout/Header.tsx` entre el enlace de login y el botón de logout. La suite E2E no falló porque las páginas renderizaron y respondieron correctamente, pero se registra como discrepancia no bloqueante para revisión.
 
@@ -234,7 +344,22 @@ Casos E2E críticos aún pendientes:
 | E2E-AUTH-01 | Registro/login y sesión visible | Pendiente |
 | E2E-WKT-01 | Crear entrenamiento desde builder | Pendiente |
 | E2E-WKT-02 | Finalizar sesión y verla en historial | Pendiente |
-| E2E-PROG-01 | Programas: ver detalle e inscribirse | Pendiente |
+| E2E-PROG-03 | Programas: inscripcion desde UI autenticada | Pendiente |
+
+### 9.1 Pruebas de aceptacion del modulo Programs
+
+Estas pruebas de aceptacion se basan en el formato de checklist QA usado por el equipo y se apoyan en evidencias de Bruno, Vitest Integration y Playwright. El actor principal es un usuario autenticado, salvo en los casos de catalogo publico.
+
+| ID | Funcionalidad | Requisito asociado | Actor | Precondiciones | Pasos de prueba | Resultado esperado | Evidencia | Estado |
+|----|---------------|--------------------|-------|----------------|-----------------|--------------------|-----------|--------|
+| AT-PROG-001 | Ver catalogo de programas | El sistema debe mostrar programas publicados | Usuario visitante o autenticado | Debe existir al menos un programa `PUBLISHED` y `isActive=true` | 1. Abrir `/en/programs`.<br>2. Consultar `GET /api/programs`.<br>3. Verificar listado visible. | El catalogo carga sin error y muestra programas disponibles. | Playwright `renders the public programs catalog...`; API HTTP 200 | Aprobado |
+| AT-PROG-002 | Ver detalle de programa | El sistema debe mostrar informacion completa del programa | Usuario visitante o autenticado | Programa con slug valido, coach, week y session | 1. Abrir `/en/programs/:slug`.<br>2. Consultar `GET /api/programs/:slug`.<br>3. Verificar coach, semanas y sesiones. | El detalle muestra titulo, coach, semanas y sesiones. | Integracion INT-PROG-04; Playwright Programs | Aprobado |
+| AT-PROG-003 | Ver detalle de sesion | El sistema debe mostrar ejercicios y sets sugeridos de la sesion | Usuario visitante o autenticado | Programa con sesion y ejercicios asociados | 1. Abrir `/en/programs/:slug/session/:sessionSlug`.<br>2. Consultar `GET /api/programs/:slug/sessions/:sessionSlug`.<br>3. Verificar ejercicios y suggested sets. | La sesion carga con ejercicios y sets sugeridos ordenados. | Integracion INT-PROG-05; Playwright `loads a program session page...` | Aprobado |
+| AT-PROG-004 | Inscripcion a programa | El usuario debe poder inscribirse a un programa | Usuario autenticado | Usuario con cookie valida y programa publicado | 1. Enviar `POST /api/programs/:slug/enroll`.<br>2. Consultar `GET /api/programs/:slug/enroll`.<br>3. Verificar enrollment. | Se crea `user_program_enrollments` y el estado indica inscrito. | Integracion INT-PROG-06; Bruno manual | Aprobado |
+| AT-PROG-005 | Iniciar sesion de programa | El usuario inscrito debe poder iniciar una sesion | Usuario autenticado | Enrollment existente y `program_sessions.id` valido | 1. Enviar `POST /api/programs/session-progress/start`.<br>2. Validar `sessionProgress.id`.<br>3. Revisar DB. | Se crea o retorna `user_session_progress`. | Integracion INT-PROG-07; Bruno manual | Aprobado |
+| AT-PROG-006 | Sincronizar workout del programa | El entrenamiento realizado debe persistirse | Usuario autenticado | Sesion de programa iniciada y ejercicio valido | 1. Enviar `POST /api/workout-sessions/sync`.<br>2. Usar el `workoutSessionId` generado.<br>3. Verificar `workout_sessions`. | Se crea `workout_sessions` con ejercicios y sets completados. | Integracion INT-PROG-07; Bruno manual | Aprobado |
+| AT-PROG-007 | Completar sesion de programa | El progreso debe actualizarse al finalizar el workout | Usuario autenticado | `progressId` y `workoutSessionId` validos | 1. Enviar `POST /api/programs/session-progress/:progressId/complete`.<br>2. Consultar `GET /api/programs/:slug/progress`.<br>3. Revisar DB. | `completedAt` queda informado, el progreso llega a 100% en programa de una sesion. | Integracion INT-PROG-07; Bruno manual | Aprobado |
+| AT-PROG-008 | Manejo de errores | El sistema debe rechazar peticiones invalidas | Usuario visitante o autenticado | Sin cookie o slug inexistente | 1. Enviar enroll sin cookie.<br>2. Consultar slug inexistente.<br>3. Verificar codigo HTTP. | El sistema responde 401 para no autenticado y 404 para slug inexistente. | Integracion INT-PROG-08 | Aprobado |
 
 ## 10. Resultados CI/CD
 
@@ -246,22 +371,25 @@ Workflow detectado:
 .github/workflows/ci.yml
 ```
 
-Jobs:
+Jobs actualizados:
 
 | Job | Pasos principales | Estado |
 |-----|-------------------|--------|
-| `lint` | install, Prisma generate, lint, test, coverage | Existente |
-| `build` | install, Prisma generate, build | Existente |
+| `quality` | install, Prisma generate, lint, test, coverage, artifact coverage | Implementado |
+| `integration` | PostgreSQL 16 service, migrate deploy, `pnpm test:integration` | Implementado |
+| `e2e` | PostgreSQL 16 service, migrate deploy, Playwright Chromium, `pnpm test:e2e`, artifact report | Implementado |
+| `build` | install, Prisma generate, `pnpm build` | Implementado |
 
 Pendientes recomendados:
 
 | Mejora | Estado |
 |--------|--------|
-| Agregar `pnpm test:integration` al CI | Pendiente |
-| Publicar coverage como artifact | Pendiente |
+| Agregar `pnpm test:integration` al CI | Implementado |
+| Publicar coverage como artifact | Implementado |
 | Agregar Postman/Newman | Pendiente |
-| Agregar Playwright E2E | Parcialmente implementado |
-| Usar secrets QA para DB test | Pendiente |
+| Agregar Playwright E2E | Implementado |
+| Usar base PostgreSQL aislada para CI | Implementado con servicio temporal |
+| Usar secrets QA para pruebas desplegadas opcionales | Pendiente |
 
 ### 10.2 Vercel
 
@@ -292,12 +420,37 @@ Evidencia a adjuntar:
 | RES-USER-01 | User | Integración | Vitest + fetch | Profile/preferences | Datos persistidos y validación 400/401 | Aprobado | Aprobado | Log integración |
 | RES-EXE-01 | Exercises | Integración | Vitest + fetch | Filtros y catálogo | 200 en válido, 400 en inválido | Aprobado | Aprobado | Log integración |
 | RES-PROG-01 | Programs | Integración | Vitest + fetch | List/detail/enroll | 200 en válido, 401/404 en negativos | Aprobado | Aprobado | Log integración |
+| RES-PROG-02 | Programs | Integración deploy | Vitest + fetch | Enroll -> start -> sync workout -> complete -> progress | Grafo Programs y progreso persistidos | `8 passed` contra Vercel/Neon | Aprobado | Log `pnpm test:integration:programs:deployed:keep` |
+| RES-PROG-03 | Programs | E2E | Playwright | Catalogo, detalle y pagina de sesion | UI y API anidada cargan sin 5xx | `4 passed` contra Vercel | Aprobado | Reporte Playwright |
 | RES-PREM-01 | Premium | Integración | Vitest + fetch | Status/plans | 200 y estructura esperada | Aprobado | Aprobado | Log integración |
 | RES-POST-01 | API general | Postman | Postman | Colecciones | Requests documentados | No ejecutado | Pendiente | Pendiente |
-| RES-E2E-01 | Páginas públicas | E2E | Playwright | Navegación real | Páginas renderizan sin 5xx | `22 passed` junto con APIs públicas | Aprobado | Reporte Playwright |
-| RES-E2E-02 | APIs públicas | E2E | Playwright request | Requests públicos | APIs responden con forma esperada | `22 passed` junto con páginas públicas | Aprobado | Reporte Playwright |
-| RES-CI-01 | CI | GitHub Actions | Workflow | Push/PR | Lint, test, coverage, build | Workflow existente | Parcial | Link Actions |
+| RES-E2E-01 | Páginas públicas | E2E | Playwright | Navegación real | Páginas renderizan sin 5xx | Incluido en `26 passed` | Aprobado | Reporte Playwright |
+| RES-E2E-02 | APIs públicas | E2E | Playwright request | Requests públicos | APIs responden con forma esperada | Incluido en `26 passed` | Aprobado | Reporte Playwright |
+| RES-CI-01 | CI | GitHub Actions | Workflow | Push/PR | Lint, test, coverage, integración, E2E y build | Workflow actualizado | Aprobado pendiente de corrida remota | Link Actions |
 | RES-CD-01 | CD | Vercel | Deployment | Push conectado | App desplegada | URL QA responde | Aprobado | Link Vercel |
+
+### 11.1 Consolidado de resultados
+
+| Tipo de prueba | Alcance registrado | Total ejecutado/documentado | Aprobados | Fallidos | Pendientes | Evidencia principal |
+|----------------|--------------------|-----------------------------|-----------|---------|------------|---------------------|
+| Unitarias | Componentes, schemas, libs y entidades | 509 tests | 509 | 0 | 0 | `pnpm test` |
+| Integracion general | Auth/User, Workout Sessions, Exercises, Programs, Premium/Billing, RevenueCat | 26 tests | 26 | 0 | 0 | `pnpm test:integration` |
+| Integracion Programs desplegada | Vercel + Neon: catalogo, detalle, sesion, enroll, start, sync, complete, progress y DB graph | 8 tests | 8 | 0 | 0 | `pnpm test:integration:programs:deployed:keep` |
+| E2E smoke publico + Programs local | Home, Programs, Premium, Tools, APIs publicas, redirect locale, detalle Programs y sesión Programs | 26 tests | 26 | 0 | 0 | `pnpm test:e2e` |
+| E2E Programs desplegado | Catalogo, detalle, pagina de sesion y API anidada Programs | 4 tests | 4 | 0 | 0 | `pnpm test:e2e:programs:deployed` |
+| Aceptacion Programs | Checklist funcional AT-PROG-001 a AT-PROG-008 | 8 casos | 8 | 0 | 0 | Bruno manual + Vitest + Playwright |
+| Postman/Bruno general | Colecciones manuales por endpoint | En ejecucion manual | Completar | Completar | Completar | Capturas Bruno |
+
+Resumen numerico automatizado:
+
+| Categoria automatizada | Total | Pasaron | Fallaron | Porcentaje aprobado |
+|------------------------|-------|---------|----------|---------------------|
+| Unitarias | 509 | 509 | 0 | 100% |
+| Integracion general | 26 | 26 | 0 | 100% |
+| E2E local completo | 26 | 26 | 0 | 100% |
+| Integracion Programs deploy | 8 | 8 | 0 | 100% |
+| E2E Programs deploy | 4 | 4 | 0 | 100% |
+| Total automatizado destacado para Programs | 16 | 16 | 0 | 100% |
 
 ## 12. Incidentes encontrados
 
@@ -308,7 +461,7 @@ Evidencia a adjuntar:
 | INC-03 | Error semántico de ejercicio inexistente debía reportarse como HTTP 400 | Media | Resuelto | Se asignó status 400 para `Exercises not found` |
 | INC-04 | No existe Postman versionado | Baja | Pendiente | Crear colección y environment |
 | INC-05 | E2E no cubría navegación real | Media | Resuelto parcialmente | Se instaló Playwright, se agregaron smoke tests públicos y `pnpm test:e2e` aprobó |
-| INC-06 | CI aún no ejecuta integración HITO 3 | Media | Pendiente | Agregar `pnpm test:integration` con DB QA |
+| INC-06 | CI aún no ejecutaba integración HITO 3 | Media | Resuelto | Se agregó job `integration` con PostgreSQL temporal y `pnpm test:integration` |
 | INC-07 | Hydration mismatch en `Header` durante E2E público | Baja | Pendiente | Revisar render inicial de sesión para que SSR y cliente no alternen login/logout |
 | INC-08 | Checkout premium sin autenticación responde HTTP 500 | Media | Pendiente | Ajustar endpoint para devolver 401/403 si el usuario no está autenticado |
 
@@ -318,9 +471,9 @@ Evidencia a adjuntar:
 |----|--------------------|----------------|-----------|--------------|--------|
 | DISC-01 | Integración debe poder ejecutar flujo real API -> DB | Solo había unitarias inicialmente | Media | Se implementó LAB 08 para workout sessions | Cerrado |
 | DISC-02 | Casos semánticos deben devolver error controlado | Sync devolvía respuesta no adecuada para semántico | Media | Se normalizó respuesta y status | Cerrado |
-| DISC-03 | HITO 3 requiere E2E | No existía Playwright/Cypress | Media | Se instaló Playwright, se agregaron smoke tests públicos y aprobaron 22 tests | Cerrado para smoke público |
+| DISC-03 | HITO 3 requiere E2E | No existía Playwright/Cypress | Media | Se instaló Playwright, se agregaron smoke tests públicos y aprobaron 26 tests | Cerrado para smoke público y Programs |
 | DISC-04 | HITO 3 requiere Postman | No hay colección versionada | Baja | Se documenta plan de colección | Pendiente |
-| DISC-05 | CI/CD debe incluir integración | CI no ejecuta `test:integration` | Media | Se recomienda agregar job/paso | Pendiente |
+| DISC-05 | CI/CD debe incluir integración | CI no ejecutaba `test:integration` ni E2E | Media | Se agregaron jobs `integration` y `e2e` al workflow | Cerrado pendiente de corrida remota |
 | DISC-06 | UI pública debe hidratar sin diferencias SSR/cliente | Header alterna login/logout durante hidratación | Baja | Registrar hallazgo para corrección posterior | Pendiente |
 | DISC-07 | Checkout sin sesión debería rechazar por autenticación | Endpoint responde 500 controlado | Media | Registrar mejora para convertir a 401/403 | Pendiente |
 
@@ -330,15 +483,15 @@ Evidencia a adjuntar:
 2. La suite de integración HITO 3 valida Auth/User, Workout Sessions, Exercises, Programs y Premium Status.
 3. La API del proyecto está organizada en `app/api` con módulos claros: Auth, User, Workout Sessions, Exercises, Programs, Premium, Webhooks y Statistics.
 4. El despliegue QA en Vercel está accesible.
-5. GitHub Actions ya ejecuta lint, test, coverage y build, pero falta incluir integración, Postman y E2E.
-6. Playwright quedó instalado y ejecutado correctamente para smoke tests públicos, con resultado `22 passed`.
+5. GitHub Actions ya está preparado para ejecutar lint, test, coverage, integración, E2E y build en jobs separados.
+6. Playwright quedó instalado y ejecutado correctamente para smoke tests públicos y Programs, con resultado `26 passed`.
 7. Para cerrar HITO 3 con mayor solidez, se recomienda ampliar Playwright a flujos autenticados y versionar colecciones Postman.
 
 ## 15. Recomendaciones
 
 | Prioridad | Recomendación | Motivo |
 |-----------|---------------|--------|
-| Alta | Agregar `pnpm test:integration` a CI | Evita regresiones en API + DB |
+| Alta | Mantener `pnpm test:integration` en CI con PostgreSQL temporal | Evita regresiones en API + DB |
 | Alta | Crear colección Postman para Auth, User, Workout, Programs y Exercises | Evidencia de sistema y aceptación |
 | Alta | Ampliar Playwright para flujos autenticados críticos | Cubre experiencia real de usuario |
 | Media | Publicar coverage y reportes como artifacts | Mejora evidencia del HITO |
@@ -364,12 +517,12 @@ Evidencia a adjuntar:
 | Evidencia | Estado |
 |-----------|--------|
 | `pnpm test` | Pendiente adjuntar captura |
-| `pnpm test:coverage` | Pendiente adjuntar captura |
-| `pnpm test:integration` | Pendiente adjuntar captura |
+| `pnpm test:coverage` | Aprobado, adjuntar captura/log con porcentajes |
+| `pnpm test:integration` | Aprobado, adjuntar captura/log `26 passed` |
 | Vercel deployment | Pendiente adjuntar captura |
 | GitHub Actions exitoso | Pendiente adjuntar captura |
 | Postman | Pendiente |
-| E2E | Aprobado, adjuntar captura/reporte `22 passed` |
+| E2E | Aprobado, adjuntar captura/reporte `26 passed` |
 
 ### 16.3 Archivos relacionados
 
@@ -393,11 +546,11 @@ Evidencia a adjuntar:
 | Área | Estado |
 |------|--------|
 | Unitarias | Aprobado con evidencia registrada |
-| Coverage | Configurado, pendiente adjuntar porcentajes finales |
-| Integración | Aprobado para Auth/User, Workout Sessions, Exercises, Programs y Premium Status |
+| Coverage | Aprobado con porcentajes registrados |
+| Integración | Aprobado para Auth/User, Workout Sessions, Exercises, Programs completo y Premium Status |
 | Postman | Pendiente de crear/ejecutar colección |
-| E2E | Aprobado para smoke público con `22 passed`; pendiente ampliar flujos autenticados |
-| CI | Parcial, falta integración/E2E/Postman |
+| E2E | Aprobado para smoke público y Programs con `26 passed`; pendiente ampliar flujos autenticados de Auth/Workout |
+| CI | Implementado para lint, unitarias, coverage, integración, E2E y build; pendiente Postman/Newman |
 | CD | Despliegue Vercel accesible |
 | Aceptación QA | Pendiente de firma/capturas |
 

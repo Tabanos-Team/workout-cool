@@ -67,7 +67,7 @@ Nota importante: en este repositorio los endpoints de App Router están en `app/
 | Local integración | `http://127.0.0.1:3101` | Servidor levantado por `pnpm test:integration` | Suite automatizada |
 | QA Vercel | `https://workout-cool-ten.vercel.app/` | Validación funcional, Postman y aceptación | Equipo QA |
 | Base de datos QA | Neon PostgreSQL | Persistencia de pruebas controladas | Equipo backend |
-| CI | GitHub Actions | Lint, unitarias, coverage y build | Repositorio |
+| CI | GitHub Actions | Lint, unitarias, coverage, integración, E2E y build | Repositorio |
 | CD | Vercel | Build y despliegue automático | Vercel |
 
 ## 6. Inventario de módulos funcionales
@@ -246,7 +246,10 @@ Nota importante: en este repositorio los endpoints de App Router están en `app/
 | `pnpm test:coverage` | Existente | Coverage V8 |
 | `pnpm test:integration` | Existente | Integración HITO 3 sobre Auth/User, Workout, Exercises, Programs y Premium |
 | `pnpm test:integration:watch` | Existente | Integración en watch |
+| `pnpm test:integration:programs:deployed` | Existente | Integración Programs contra Vercel/Neon con limpieza |
+| `pnpm test:integration:programs:deployed:keep` | Existente | Integración Programs contra Vercel/Neon conservando evidencia |
 | `pnpm test:e2e` | Existente | Playwright E2E smoke tests |
+| `pnpm test:e2e:programs:deployed` | Existente | Playwright E2E del modulo Programs contra Vercel |
 | `pnpm test:e2e:ui` | Existente | Playwright E2E en modo UI |
 
 ### 9.2 Scripts sugeridos
@@ -285,15 +288,17 @@ El workflow `.github/workflows/ci.yml` ejecuta:
 
 | Job | Pasos |
 |-----|-------|
-| `lint` | checkout, setup pnpm, setup Node 22, install, Prisma generate, lint, test, coverage |
-| `build` | checkout, setup pnpm, setup Node 22, install, Prisma generate, build con variables dummy |
+| `quality` | checkout, setup pnpm, Node 22, install, Prisma generate, lint, test, coverage y artifact de coverage |
+| `integration` | PostgreSQL 16 temporal, Prisma migrate deploy y `pnpm test:integration` |
+| `e2e` | PostgreSQL 16 temporal, Chromium Playwright, Prisma migrate deploy, `pnpm test:e2e` y artifact de reporte |
+| `build` | checkout, setup pnpm, Node 22, install, Prisma generate y build con variables dummy |
 
 ### 9.5 Mejora recomendada para CI
 
 | Mejora | Motivo |
 |--------|--------|
-| Agregar `pnpm test:integration` | Incluir integración LAB 08 en CI |
-| Usar base Neon de test o servicio PostgreSQL ephemeral | Evitar tocar DB productiva |
+| Mantener `pnpm test:integration` en CI | Incluir integración HITO 3 en cada push/PR |
+| Usar servicio PostgreSQL ephemeral | Evitar tocar DB productiva durante CI |
 | Publicar coverage como artifact | Evidencia para informe |
 | Publicar reporte Playwright como artifact | Evidencia E2E |
 | Ejecutar Newman si se crea colección Postman | Automatizar pruebas de API |
@@ -434,8 +439,8 @@ Pasos:
 
 1. Ampliar Playwright desde smoke tests públicos hacia flujos autenticados críticos.
 2. Agregar Newman si se decide versionar Postman.
-3. Agregar `pnpm test:integration` y `pnpm test:e2e` al workflow CI con base de datos QA.
-4. Publicar reportes de coverage y Playwright como artifacts de GitHub Actions.
+3. Mantener `pnpm test:integration` y `pnpm test:e2e` en el workflow CI con PostgreSQL temporal.
+4. Publicar y adjuntar los artifacts de coverage y Playwright generados por GitHub Actions.
 5. Mantener datos de prueba con prefijos únicos y limpieza automática.
 6. Separar secretos QA de secretos productivos.
 7. Mantener la suite actual de integración como base y ampliarla hacia webhooks/premium checkout en sandbox.

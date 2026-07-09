@@ -43,6 +43,12 @@ export async function setup() {
   }
 
   const url = new URL(baseUrl);
+
+  if (!isLocalTestServer(url.hostname)) {
+    await waitForServer(baseUrl);
+    return;
+  }
+
   const server = spawn("pnpm", ["dev", "-H", url.hostname, "-p", url.port || "3101"], {
     cwd: process.cwd(),
     env: {
@@ -68,6 +74,10 @@ export async function setup() {
   return async () => {
     await stopServer(server);
   };
+}
+
+function isLocalTestServer(hostname: string) {
+  return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "0.0.0.0";
 }
 
 async function stopServer(server: ChildProcess) {

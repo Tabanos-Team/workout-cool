@@ -27,6 +27,7 @@ export interface TestExercise {
 export interface TestProgram {
   id: string;
   slug: string;
+  sessionId?: string;
   sessionSlug?: string;
 }
 
@@ -39,7 +40,15 @@ interface SignUpResponse {
 }
 
 export function createRunId() {
+  if (process.env.TEST_RUN_ID) {
+    return process.env.TEST_RUN_ID;
+  }
+
   return `lab08-${crypto.randomUUID()}`;
+}
+
+export function shouldKeepIntegrationData() {
+  return process.env.KEEP_INTEGRATION_DATA === "true";
 }
 
 export async function createAuthenticatedUser(runId: string): Promise<TestIdentity> {
@@ -255,6 +264,7 @@ export async function createPublishedTestProgram(runId: string, exerciseId?: str
   return {
     id: program.id,
     slug: program.slug,
+    sessionId: session.id,
     sessionSlug: session.slug
   };
 }
@@ -296,6 +306,47 @@ export function createWorkoutSessionPayload(runId: string, userId: string, exerc
       ]
     }
   };
+}
+
+export async function getProgramIntegrationGraph(programId: string) {
+  return prisma.program.findUnique({
+    where: { id: programId },
+    include: {
+      coaches: true,
+      weeks: {
+        include: {
+          sessions: {
+            include: {
+              exercises: {
+                include: {
+                  exercise: true,
+                  suggestedSets: true
+                }
+              },
+              userProgress: {
+                include: {
+                  workoutSession: {
+                    include: {
+                      exercises: {
+                        include: {
+                          sets: true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      enrollments: {
+        include: {
+          sessionProgress: true
+        }
+      }
+    }
+  });
 }
 
 export async function cleanupLab08Data(runId: string) {
