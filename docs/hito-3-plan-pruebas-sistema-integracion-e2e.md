@@ -289,8 +289,8 @@ El workflow `.github/workflows/ci.yml` ejecuta:
 | Job | Pasos |
 |-----|-------|
 | `quality` | checkout, setup pnpm, Node 22, install, Prisma generate, lint, test, coverage y artifact de coverage |
-| `integration` | PostgreSQL 16 temporal, Prisma migrate deploy y `pnpm test:integration` |
-| `e2e` | PostgreSQL 16 temporal, Chromium Playwright, Prisma migrate deploy, `pnpm test:e2e` y artifact de reporte |
+| `integration` | PostgreSQL 16 temporal, `prisma db push` y `pnpm test:integration` |
+| `e2e` | PostgreSQL 16 temporal, Chromium Playwright, `prisma db push`, `pnpm test:e2e` y artifact de reporte |
 | `build` | checkout, setup pnpm, Node 22, install, Prisma generate y build con variables dummy |
 
 ### 9.5 Mejora recomendada para CI

@@ -376,8 +376,8 @@ Jobs actualizados:
 | Job | Pasos principales | Estado |
 |-----|-------------------|--------|
 | `quality` | install, Prisma generate, lint, test, coverage, artifact coverage | Implementado |
-| `integration` | PostgreSQL 16 service, migrate deploy, `pnpm test:integration` | Implementado |
-| `e2e` | PostgreSQL 16 service, migrate deploy, Playwright Chromium, `pnpm test:e2e`, artifact report | Implementado |
+| `integration` | PostgreSQL 16 service, `prisma db push`, `pnpm test:integration` | Implementado |
+| `e2e` | PostgreSQL 16 service, `prisma db push`, Playwright Chromium, `pnpm test:e2e`, artifact report | Implementado |
 | `build` | install, Prisma generate, `pnpm build` | Implementado |
 
 Pendientes recomendados:

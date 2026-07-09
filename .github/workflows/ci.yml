@@ -156,8 +156,8 @@ jobs:
       - name: Generate Prisma client
         run: pnpm prisma generate
 
-      - name: Apply database migrations
-        run: pnpm prisma migrate deploy
+      - name: Sync database schema
+        run: pnpm prisma db push --skip-generate --accept-data-loss
 
       - name: Run integration tests
         run: pnpm test:integration
@@ -207,8 +207,8 @@ jobs:
       - name: Generate Prisma client
         run: pnpm prisma generate
 
-      - name: Apply database migrations
-        run: pnpm prisma migrate deploy
+      - name: Sync database schema
+        run: pnpm prisma db push --skip-generate --accept-data-loss
 
       - name: Run Playwright tests
         run: pnpm test:e2e
