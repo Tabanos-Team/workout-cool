@@ -1,0 +1,34 @@
+info:
+  name: 2. Get User Workout Sessions
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: "{{URLBaseApi}}/workout-sessions/user/{{userId}}"
+  auth: inherit
+
+runtime:
+  scripts:
+    post-response: |-
+      test("Status code is 200", function() {
+        expect(res.status).to.equal(200);
+      });
+      test("Response is an array containing the synced session", function() {
+        const body = res.body;
+        expect(body).to.be.an("array");
+        
+        const targetSessionId = bru.getVar("sessionId");
+        const persisted = body.find(s => s.id === targetSessionId);
+        
+        expect(persisted).to.be.an("object");
+        expect(persisted.userId).to.equal(bru.getVar("userId"));
+        expect(persisted.exercises[0].id).to.equal(bru.getVar("exerciseId"));
+        expect(persisted.exercises[0].sets).to.have.lengthOf(2);
+      });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

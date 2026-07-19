@@ -1,0 +1,35 @@
+info:
+  name: 3. Rate Workout Session
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: "{{URLBaseApi}}/workout-sessions/{{sessionId}}/rating"
+  body:
+    type: json
+    data: |-
+      {
+        "rating": 5,
+        "ratingComment": "Excellent integration workout"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    post-response: |-
+      test("Status code is 200", function() {
+        expect(res.status).to.equal(200);
+      });
+      test("Rating response is correct", function() {
+        const body = res.body;
+        expect(body.success).to.equal(true);
+        expect(body.data.rating).to.equal(5);
+        expect(body.data.ratingComment).to.equal("Excellent integration workout");
+      });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

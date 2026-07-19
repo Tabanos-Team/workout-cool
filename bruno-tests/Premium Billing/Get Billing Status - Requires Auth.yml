@@ -1,0 +1,36 @@
+info:
+  name: Get Billing Status - Requires Auth
+  type: http
+  seq: 4
+  tags:
+    - premium-billing
+    - auth-boundary
+
+http:
+  method: GET
+  url: "{{URLBaseApi}}/billing/status"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+
+        test("rejects anonymous billing status access", function() {
+          expect(res.status).to.equal(401);
+        });
+
+        test("returns Unauthorized error", function() {
+          expect(body).to.have.property("error", "Unauthorized");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Covers the authenticated boundary of GET /api/billing/status.
+  After Auth/Sign-in, duplicate this request or run it manually to validate the authenticated payload.

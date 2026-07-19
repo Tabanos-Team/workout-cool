@@ -1,0 +1,48 @@
+info:
+  name: Track Paywall Cancelled
+  type: http
+  seq: 4
+  tags:
+    - analytics
+    - premium
+
+http:
+  method: POST
+  url: "{{URLBaseApi}}/analytics/premium"
+  body:
+    type: json
+    data: |-
+      {
+        "event": "paywall_cancelled"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+
+        test("tracks paywall cancelled event", function() {
+          expect(res.status).to.equal(200);
+          expect(body).to.include({
+            event: "paywall_cancelled",
+            success: true
+          });
+        });
+
+        test("maps cancellation to the expected analytics event", function() {
+          expect(body.analyticsEvent).to.include({
+            name: "Paywall Cancelled",
+            channel: "premium"
+          });
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Covers POST /api/analytics/premium for the paywall_cancelled event.

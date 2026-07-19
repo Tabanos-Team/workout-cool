@@ -1,0 +1,71 @@
+info:
+  name: 1. Sync Workout Session
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{URLBaseApi}}/workout-sessions/sync"
+  body:
+    type: json
+    data: |-
+      {
+        "session": {
+          "id": "{{sessionId}}",
+          "userId": "{{userId}}",
+          "startedAt": "2026-07-03T10:00:00.000Z",
+          "endedAt": "2026-07-03T10:45:00.000Z",
+          "status": "completed",
+          "muscles": ["CHEST", "TRICEPS"],
+          "exercises": [
+            {
+              "id": "{{exerciseId}}",
+              "order": 0,
+              "sets": [
+                {
+                  "id": "{{setId1}}",
+                  "setIndex": 0,
+                  "types": ["REPS", "WEIGHT"],
+                  "valuesInt": [10, 80],
+                  "valuesSec": [],
+                  "units": ["kg"],
+                  "completed": true
+                },
+                {
+                  "id": "{{setId2}}",
+                  "setIndex": 1,
+                  "types": ["REPS", "WEIGHT"],
+                  "valuesInt": [8, 85],
+                  "valuesSec": [],
+                  "units": ["kg"],
+                  "completed": true
+                }
+              ]
+            }
+          ]
+        }
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    pre-request: |-
+      const rand = Math.random().toString(36).substring(2, 10);
+      bru.setVar("sessionId", "session-" + rand);
+      bru.setVar("setId1", "set-1-" + rand);
+      bru.setVar("setId2", "set-2-" + rand);
+    post-response: |-
+      test("Status code is 200", function() {
+        expect(res.status).to.equal(200);
+      });
+      test("Response success is true", function() {
+        const body = res.body;
+        expect(body.success).to.equal(true);
+        expect(body.data.id).to.equal(bru.getVar("sessionId"));
+      });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

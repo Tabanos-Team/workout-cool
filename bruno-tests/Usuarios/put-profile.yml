@@ -1,0 +1,22 @@
+info:
+  name: put-profile
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{URLBaseApi}}/user/profile"
+  body:
+    type: json
+    data: |-
+      {
+        "firstName": "Test1",
+        "lastName": "tester"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,22 @@
+name: QA Vercel
+variables:
+  - name: URLBase
+    value: https://workout-cool-ten.vercel.app
+  - name: URLBaseApi
+    value: https://workout-cool-ten.vercel.app/api
+  - name: PremiumProvider
+    value: stripe
+  - name: PremiumRegion
+    value: LATAM
+  - name: PremiumTimezone
+    value: America/Lima
+  - name: PremiumPlanId
+    value: ""
+  - name: BillingReturnUrl
+    value: https://workout-cool-ten.vercel.app/es/premium
+  - name: cookie
+    value: __Secure-better-auth.session-token=aBolCfpTGmFwSETTB79B4NAmOrxgYcpe.FheN6702b8qT3dCRjjyFBIzuTe3l3uydjSypsNhxbzA%3D; __Secure-better-auth.session_data=eyJzZXNzaW9uIjp7InNlc3Npb24iOnsiZXhwaXJlc0F0IjoiMjAyNi0wNy0yNlQwNToyMTowMi4xNjRaIiwidG9rZW4iOiJhQm9sQ2ZwVEdtRndTRVRUQjc5QjROQW1PcnhnWWNwZSIsImNyZWF0ZWRBdCI6IjIwMjYtMDctMTlUMDU6MjE6MDIuMTY1WiIsInVwZGF0ZWRBdCI6IjIwMjYtMDctMTlUMDU6MjE6MDIuMTY1WiIsImlwQWRkcmVzcyI6IjM4LjI1MC4xNTcuMTg4IiwidXNlckFnZW50IjoiTW96aWxsYS81LjAgKFgxMTsgTGludXggeDg2XzY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvMTQ4LjAuMC4wIFNhZmFyaS81MzcuMzYiLCJ1c2VySWQiOiJUVEVFSjlCUDc0bllNU2EyWUZFVTZJYldiSFRGZklCbiIsImltcGVyc29uYXRlZEJ5IjpudWxsLCJpZCI6IkZXRkFDd2VzQXRJVVJST0tyd2d5NThuUnB0ZEViMUw3In0sInVzZXIiOnsibmFtZSI6InRlc3QiLCJlbWFpbCI6InRlc3RAZ21haWwuY29tIiwiZW1haWxWZXJpZmllZCI6ZmFsc2UsImltYWdlIjpudWxsLCJjcmVhdGVkQXQiOiIyMDI2LTA2LTExVDIxOjU1OjQ3LjAyMloiLCJ1cGRhdGVkQXQiOiIyMDI2LTA2LTExVDIzOjA0OjIyLjE2NFoiLCJyb2xlIjoidXNlciIsImJhbm5lZCI6ZmFsc2UsImJhblJlYXNvbiI6bnVsbCwiYmFuRXhwaXJlcyI6bnVsbCwiZmlyc3ROYW1lIjoiVGVzdDEiLCJsYXN0TmFtZSI6InRlc3RlciIsImlkIjoiVFRFRUo5QlA3NG5ZTVNhMllGRVU2SWJXYkhURmZJQm4ifX0sImV4cGlyZXNBdCI6MTc4NzAzMDQ2MjE3NSwic2lnbmF0dXJlIjoiNlFYZTBLenRTUGg1WVBYbTFxekV2UEszMTdKUXJVYWJ6b2o2RENrYWN1NCJ9
+  - name: origin
+    value: https://workout-cool-ten.vercel.app
+  - name: user_agent
+    value: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36

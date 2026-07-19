@@ -1,0 +1,37 @@
+info:
+  name: Get Premium Plans - Timezone Detection
+  type: http
+  seq: 2
+  tags:
+    - premium-billing
+    - public
+    - region-detection
+
+http:
+  method: GET
+  url: "{{URLBaseApi}}/premium/plans?tz={{PremiumTimezone}}"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+
+        test("returns 200", function() {
+          expect(res.status).to.equal(200);
+        });
+
+        test("detects LATAM from America/Lima timezone", function() {
+          expect(body).to.have.property("detectedRegion", "LATAM");
+          expect(body.plans).to.be.an("array");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Covers the region fallback in GET /api/premium/plans when the region is not explicitly sent.

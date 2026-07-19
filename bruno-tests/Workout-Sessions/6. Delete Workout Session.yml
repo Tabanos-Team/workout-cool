@@ -1,0 +1,26 @@
+info:
+  name: 6. Delete Workout Session
+  type: http
+  seq: 9
+
+http:
+  method: DELETE
+  url: "{{URLBaseApi}}/workout-sessions/{{sessionId}}"
+  auth: inherit
+
+runtime:
+  scripts:
+    post-response: |-
+      test("Status code is 200", function() {
+        expect(res.status).to.equal(200);
+      });
+      test("Delete response is success", function() {
+        const body = res.body;
+        expect(body.success).to.equal(true);
+      });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

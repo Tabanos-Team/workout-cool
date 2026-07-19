@@ -1,0 +1,54 @@
+info:
+  name: sycSession
+  type: http
+  seq: 9
+
+http:
+  method: POST
+  url: POST {{URLBaseApi}}/workout-sessions/sync
+  body:
+    type: json
+    data: |-
+      {
+        "session": {
+          "id": "qa-program-completion-workout-001",
+          "userId": "TTEEJ9BP74nYMSa2YFEU6IbWbHTFfIBn",
+          "startedAt": "2026-07-08T00:20:00.000Z",
+          "endedAt": "2026-07-08T00:55:00.000Z",
+          "status": "completed",
+          "muscles": ["CHEST"],
+          "exercises": [
+            {
+              "id": "qa-program-push-up-exercise",
+              "order": 0,
+              "sets": [
+                {
+                  "id": "qa-program-completion-set-1",
+                  "setIndex": 0,
+                  "types": ["BODYWEIGHT", "REPS"],
+                  "valuesInt": [0, 10],
+                  "valuesSec": [],
+                  "units": [],
+                  "completed": true
+                },
+                {
+                  "id": "qa-program-completion-set-2",
+                  "setIndex": 1,
+                  "types": ["BODYWEIGHT", "REPS"],
+                  "valuesInt": [0, 12],
+                  "valuesSec": [],
+                  "units": [],
+                  "completed": true
+                }
+              ]
+            }
+          ]
+        }
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,25 @@
+info:
+  name: Complete Sesión
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: "{{URLBaseApi}}/programs/session-progress/:progressId/complete"
+  params:
+    - name: progressId
+      value: cmrbbtvtz0001if04mxt9wmc9
+      type: path
+  body:
+    type: json
+    data: |-
+      {
+        "workoutSessionId": "qa-program-completion-workout-001"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

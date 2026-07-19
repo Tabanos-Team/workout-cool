@@ -1,0 +1,33 @@
+info:
+  name: 4. Get Workout Session Summary
+  type: http
+  seq: 7
+
+http:
+  method: GET
+  url: "{{URLBaseApi}}/workout-sessions/{{sessionId}}/summary"
+  auth: inherit
+
+runtime:
+  scripts:
+    post-response: |-
+      test("Status code is 200", function() {
+        expect(res.status).to.equal(200);
+      });
+      test("Summary calculations are correct", function() {
+        const body = res.body;
+        expect(body.success).to.equal(true);
+        expect(body.data.id).to.equal(bru.getVar("sessionId"));
+        
+        expect(body.data.totalSets).to.equal(2);
+        expect(body.data.totalReps).to.equal(18);
+        expect(body.data.totalVolume).to.equal(1480);
+        expect(body.data.rating).to.equal(5);
+        expect(body.data.ratingComment).to.equal("Excellent integration workout");
+      });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

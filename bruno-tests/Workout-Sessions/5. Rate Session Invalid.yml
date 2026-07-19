@@ -1,0 +1,33 @@
+info:
+  name: 5. Rate Session Invalid
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: "{{URLBaseApi}}/workout-sessions/{{sessionId}}/rating"
+  body:
+    type: json
+    data: |-
+      {
+        "rating": 9
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    post-response: |-
+      test("Status code is 400", function() {
+        expect(res.status).to.equal(400);
+      });
+      test("Response error is INVALID_INPUT", function() {
+        const body = res.body;
+        expect(body.error).to.equal("INVALID_INPUT");
+        expect(body.details).to.be.an("object");
+      });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

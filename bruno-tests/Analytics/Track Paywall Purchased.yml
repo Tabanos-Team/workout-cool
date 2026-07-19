@@ -1,0 +1,48 @@
+info:
+  name: Track Paywall Purchased
+  type: http
+  seq: 3
+  tags:
+    - analytics
+    - premium
+
+http:
+  method: POST
+  url: "{{URLBaseApi}}/analytics/premium"
+  body:
+    type: json
+    data: |-
+      {
+        "event": "paywall_purchased"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+
+        test("tracks paywall purchased event", function() {
+          expect(res.status).to.equal(200);
+          expect(body).to.include({
+            event: "paywall_purchased",
+            success: true
+          });
+        });
+
+        test("maps purchase to the expected analytics event", function() {
+          expect(body.analyticsEvent).to.include({
+            name: "Paywall Purchase Completed",
+            channel: "premium"
+          });
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Covers POST /api/analytics/premium for the paywall_purchased event.

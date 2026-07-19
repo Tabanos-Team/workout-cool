@@ -1,0 +1,29 @@
+info:
+  name: 0. Sign-in
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{URLBaseApi}}/auth/sign-in/email"
+  body:
+    type: json
+    data: |-
+      {
+        "email": "test@gmail.com",
+        "password": "12345678"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    post-response: |-
+      test("Status code is 200", function() {
+        expect(res.status).to.equal(200);
+      });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
