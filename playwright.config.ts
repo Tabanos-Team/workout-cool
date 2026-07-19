@@ -2,6 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 const port = process.env.PLAYWRIGHT_PORT || "3200";
 const baseURL = process.env.PLAYWRIGHT_BASE_URL || `http://127.0.0.1:${port}`;
+const authFile = "playwright/.auth/user.json";
 
 export default defineConfig({
   testDir: "./e2e",
@@ -31,12 +32,28 @@ export default defineConfig({
       },
   projects: [
     {
+      name: "auth-setup",
+      testMatch: /auth\.spec\.ts/,
+      use: { ...devices["Desktop Chrome"] }
+    },
+    {
       name: "chromium",
+      testIgnore: [/auth\.spec\.ts/, /workout\.spec\.ts/],
       use: { ...devices["Desktop Chrome"] }
     },
     {
       name: "mobile-chrome",
+      testIgnore: [/auth\.spec\.ts/, /workout\.spec\.ts/],
       use: { ...devices["Pixel 5"] }
+    },
+    {
+      name: "authenticated",
+      dependencies: ["auth-setup"],
+      testMatch: /workout\.spec\.ts/,
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: authFile
+      }
     }
   ]
 });
