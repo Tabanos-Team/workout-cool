@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { LogIn, UserPlus, LogOut, User, Crown, Sparkles } from "lucide-react";
 import { useI18n } from "locales/client";
@@ -17,21 +18,26 @@ import { Link } from "@/components/ui/link";
 import { RemoveAdsText } from "@/components/premium/RemoveAdsText";
 
 export const Header = () => {
+  const [isMounted, setIsMounted] = useState(false);
   const session = useSession();
   const logout = useLogout();
   const t = useI18n();
   const { data: premiumStatus } = usePremiumStatus();
 
   // Get user initials for avatar
-  const userAvatar = session.data?.user?.email?.substring(0, 2).toUpperCase() || "";
+  const userAvatar = isMounted ? session.data?.user?.email?.substring(0, 2).toUpperCase() || "" : "";
 
-  const isPremium = premiumStatus?.isPremium ?? false;
+  const isPremium = isMounted && (premiumStatus?.isPremium ?? false);
   const showAds = env.NEXT_PUBLIC_SHOW_ADS === true;
   const hasAdProvider = env.NEXT_PUBLIC_AD_CLIENT || env.NEXT_PUBLIC_AD_PROVIDER === "ezoic";
 
   const handleSignOut = () => {
     logout.mutate();
   };
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleCloseDropdown = () => {
     const element = document.activeElement as HTMLElement;
@@ -140,7 +146,7 @@ export const Header = () => {
 
               <hr className="my-1 border-slate-200 dark:border-gray-800" />
 
-              {!session.data && !session.isPending ? (
+              {!isMounted || session.isPending ? null : !session.data ? (
                 <>
                   <li>
                     <Link className="!no-underline" href="/auth/signin" size="base" variant="nav">

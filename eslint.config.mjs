@@ -24,7 +24,17 @@ const compat = new FlatCompat({
 
 const config = [
   {
-    ignores: ["public/sw.js"],
+    ignores: [
+      "**/.next/**",
+      "**/node_modules/**",
+      "**/coverage/**",
+      "**/playwright-report/**",
+      "**/test-results/**",
+      "**/out/**",
+      "**/build/**",
+      "**/dist/**",
+      "public/sw.js",
+    ],
   },
   js.configs.recommended,
   ...tsConfigs.recommended,

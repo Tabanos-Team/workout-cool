@@ -8,8 +8,8 @@
     "email": "email dev",
     "start": "next start",
     "stripe-webhooks": "stripe listen --forward-to localhost:3000/api/webhooks/stripe",
-    "vercel-build": "next build",
-    "old-vercel-build": "prisma generate && prisma migrate deploy && next build",
+    "vercel-build": "prisma generate && next build",
+    "old-vercel-build": "prisma generate && next build",
     "postinstall": "prisma generate",
     "lint": "eslint .",
     "import:exercises-full": "tsx scripts/import-exercises-with-attributes.ts",
@@ -21,6 +21,14 @@
     "migrate:prod": "env-cmd -f .env.production prisma migrate deploy",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:integration:watch": "vitest --config vitest.integration.config.ts",
+    "test:integration:programs:deployed": "TEST_SERVER_URL=https://workout-cool-ten.vercel.app vitest run --config vitest.integration.config.ts src/test/integration/programs.integration.test.ts",
+    "test:integration:programs:deployed:keep": "TEST_SERVER_URL=https://workout-cool-ten.vercel.app TEST_RUN_ID=hito3-programs-deployed KEEP_INTEGRATION_DATA=true vitest run --config vitest.integration.config.ts src/test/integration/programs.integration.test.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:auth": "playwright test --project=authenticated",
+    "test:e2e:programs:deployed": "PLAYWRIGHT_BASE_URL=https://workout-cool-ten.vercel.app playwright test e2e/programs.spec.ts",
+    "test:e2e:ui": "playwright test --ui",
     "test:coverage": "vitest run --coverage"
   },
   "resolutions": {
@@ -116,6 +124,7 @@
     "@eslint/js": "^9.28.0",
     "@next/bundle-analyzer": "^16.2.1",
     "@next/eslint-plugin-next": "^16.2.1",
+    "@playwright/test": "^1.61.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -158,6 +167,5 @@
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.8"
   },
-  
   "packageManager": "pnpm@11.0.8+sha512.4c4097e1dd2d42372c4e7fa5a791ff28fc75a484c7ac192e64b1df0fdef17594ba982f9b4fed9adfb3c757846f565b799b2763fb3733d1de1bcb82cf46684912"
 }

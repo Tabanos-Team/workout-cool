@@ -3,10 +3,21 @@ import { NextRequest, NextResponse } from "next/server";
 import { getMobileCompatibleSession } from "@/shared/api/mobile-auth";
 import { syncWorkoutSessionAction } from "@/features/workout-session/actions/sync-workout-sessions.action";
 
+function getSyncErrorStatus(error: string) {
+  if (error.includes("User") && error.includes("not found")) {
+    return 404;
+  }
+
+  if (error.includes("Exercises not found")) {
+    return 400;
+  }
+
+  return 500;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const session = await getMobileCompatibleSession(request);
-    console.log("session:", session);
 
     if (!session?.user) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
@@ -25,10 +36,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: result.serverError }, { status: 500 });
     }
 
-    if (result?.data) {
+    if (result?.validationErrors) {
+      return NextResponse.json({ error: "INVALID_INPUT", details: result.validationErrors }, { status: 400 });
+    }
+
+    if (result?.data?.serverError) {
+      return NextResponse.json({ error: result.data.serverError }, { status: getSyncErrorStatus(result.data.serverError) });
+    }
+
+    if (result?.data?.data) {
       return NextResponse.json({
         success: true,
-        data: result.data,
+        data: result.data.data
       });
     }
 
