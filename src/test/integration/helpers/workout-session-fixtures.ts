@@ -381,9 +381,22 @@ export async function cleanupLab08Data(runId: string) {
 
   await prisma.workoutSession.deleteMany({
     where: {
-      id: {
-        startsWith: runId
-      }
+      OR: [
+        {
+          id: {
+            startsWith: runId
+          }
+        },
+        {
+          exercises: {
+            some: {
+              exerciseId: {
+                startsWith: runId
+              }
+            }
+          }
+        }
+      ]
     }
   });
 
