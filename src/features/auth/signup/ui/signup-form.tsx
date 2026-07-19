@@ -22,7 +22,16 @@ export const SignUpForm = () => {
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect");
 
-  const form = useZodForm({ schema: signUpSchema });
+  const form = useZodForm({
+    schema: signUpSchema,
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      verifyPassword: ""
+    }
+  });
 
   const { signUp } = useSignUp();
 

@@ -1,3 +1,4 @@
+import Script from "next/script";
 import { Inter, Permanent_Marker } from "next/font/google";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
@@ -246,23 +247,24 @@ export default async function RootLayout({ params, children }: RootLayoutProps) 
         <head>
           <meta charSet="UTF-8" />
           <meta content="width=device-width, initial-scale=1, maximum-scale=1 viewport-fit=cover" name="viewport" />
-          {/* {env.NEXT_PUBLIC_AD_PROVIDER !== "custom" && ( */}
-          <>
+          {env.NEXT_PUBLIC_SHOW_ADS === true && (
+            <>
             <meta content={env.NEXT_PUBLIC_AD_CLIENT} name="google-adsense-account" />
 
-            <script
-              async
+            <Script
               crossOrigin="anonymous"
+              id="google-adsense"
               src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${env.NEXT_PUBLIC_AD_CLIENT}`}
+              strategy="afterInteractive"
             />
 
             {/* Ezoic Privacy Scripts */}
-            <script data-cfasync="false" src="https://cmp.gatekeeperconsent.com/min.js" />
-            <script data-cfasync="false" src="https://the.gatekeeperconsent.com/cmp.min.js" />
+            <Script data-cfasync="false" id="ezoic-consent-gatekeeper" src="https://cmp.gatekeeperconsent.com/min.js" strategy="afterInteractive" />
+            <Script data-cfasync="false" id="ezoic-consent-cmp" src="https://the.gatekeeperconsent.com/cmp.min.js" strategy="afterInteractive" />
 
             {/* Ezoic Header Script */}
-            <script async src="//www.ezojs.com/ezoic/sa.min.js" />
-            <script
+            <Script id="ezoic-header" src="https://www.ezojs.com/ezoic/sa.min.js" strategy="afterInteractive" />
+            <Script
               dangerouslySetInnerHTML={{
                 __html: `
                     window.ezstandalone = window.ezstandalone || {};
@@ -280,9 +282,11 @@ export default async function RootLayout({ params, children }: RootLayoutProps) 
                     window.ezRewardedAds.cmd = window.ezRewardedAds.cmd || [];
                   `,
               }}
+              id="ezoic-rewarded-ads"
+              strategy="afterInteractive"
             />
-          </>
-          {/* )} */}
+            </>
+          )}
 
           {/* PWA Meta Tags */}
           <meta content="yes" name="apple-mobile-web-app-capable" />
@@ -317,8 +321,8 @@ export default async function RootLayout({ params, children }: RootLayoutProps) 
           {/* Google Analytics 4 */}
           {env.NEXT_PUBLIC_GA4_MEASUREMENT_ID && (
             <>
-              <script async src={`https://www.googletagmanager.com/gtag/js?id=${env.NEXT_PUBLIC_GA4_MEASUREMENT_ID}`} />
-              <script
+              <Script id="google-analytics" src={`https://www.googletagmanager.com/gtag/js?id=${env.NEXT_PUBLIC_GA4_MEASUREMENT_ID}`} strategy="afterInteractive" />
+              <Script
                 dangerouslySetInnerHTML={{
                   __html: `
                     window.dataLayer = window.dataLayer || [];
@@ -327,6 +331,8 @@ export default async function RootLayout({ params, children }: RootLayoutProps) 
                     gtag('config', '${env.NEXT_PUBLIC_GA4_MEASUREMENT_ID}');
                   `,
                 }}
+                id="google-analytics-config"
+                strategy="afterInteractive"
               />
             </>
           )}

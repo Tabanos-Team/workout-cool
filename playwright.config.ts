@@ -27,7 +27,8 @@ export default defineConfig({
         timeout: 60_000,
         env: {
           BETTER_AUTH_URL: baseURL,
-          NEXT_PUBLIC_APP_URL: baseURL
+          NEXT_PUBLIC_APP_URL: baseURL,
+          NEXT_PUBLIC_SHOW_ADS: "false"
         }
       },
   projects: [
