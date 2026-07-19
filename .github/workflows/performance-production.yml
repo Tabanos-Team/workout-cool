@@ -1,0 +1,113 @@
+name: Performance Testing
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  performance-test:
+    name: Run k6 Performance Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: workoutcool
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://postgres:password@localhost:5432/workoutcool?schema=public
+      BETTER_AUTH_URL: http://localhost:3000
+      BETTER_AUTH_SECRET: "mock_better_auth_secret_key_long_enough_32_characters"
+      GOOGLE_CLIENT_ID: "mock-client-id"
+      GOOGLE_CLIENT_SECRET: "mock-client-secret"
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      NODE_ENV: production
+      BASE_URL: http://localhost:3000/api
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/pnpm/store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm prisma generate
+
+      - name: Setup database schema
+        run: pnpm prisma db push
+
+      - name: Seed database exercises
+        run: pnpm run db:seed
+
+      - name: Seed database plans
+        run: pnpm run db:seed-plans
+
+      - name: Build Next.js application
+        run: pnpm run build
+
+      - name: Start Next.js server in background
+        run: pnpm run start &
+
+      - name: Wait for Next.js server to be ready
+        run: npx wait-on http://localhost:3000/api/exercises/all --timeout 60000
+
+      - name: Setup k6
+        uses: grafana/setup-k6-action@v1
+
+      - name: Run k6 performance test
+        run: |
+          k6 run -e RUN_ID=${{ github.run_id }} scripts/k6-performance.js
+
+      - name: Upload performance report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-performance-report-${{ github.run_id }}
+          path: summary-${{ github.run_id }}.json
+
+      - name: Generate step summary
+        if: always()
+        run: |
+          echo "### Resultados de Pruebas de Rendimiento (k6)" >> $GITHUB_STEP_SUMMARY
+          if [ -f summary-${{ github.run_id }}.json ]; then
+            echo "El reporte de k6 se generó exitosamente." >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            cat summary-${{ github.run_id }}.json >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No se encontró el reporte JSON de k6." >> $GITHUB_STEP_SUMMARY
+          fi
