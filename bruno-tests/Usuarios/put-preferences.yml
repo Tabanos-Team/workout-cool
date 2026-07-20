@@ -1,0 +1,45 @@
+info:
+  name: put-preferences
+  type: http
+  seq: 3
+
+http:
+  method: PUT
+  url: "{{URLBaseApi}}/user/preferences"
+  body:
+    type: json
+    data: |-
+      {
+        "goals": ["fuerza bruta"],
+        "fitnessLevel": "beginner",
+        "equipment": ["Mancuernas"],
+        "muscles": ["Hombros"],
+        "duration": 4,
+        "weeklyFrequency": 3
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+
+        test("returns 200", function() {
+          expect(res.status).to.equal(200);
+        });
+
+        test("preferences reflect the update", function() {
+          expect(body).to.have.property("fitnessLevel", "beginner");
+          expect(body).to.have.property("weeklyFrequency", 3);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Covers PUT /api/user/preferences.
+  Preconditions: run Auth/Sign-in in the same Bruno execution first.

@@ -1,0 +1,45 @@
+info:
+  name: Create Checkout - Missing PlanId
+  type: http
+  seq: 9
+  tags:
+    - premium-billing
+    - negative
+
+http:
+  method: POST
+  url: "{{URLBaseApi}}/premium/checkout"
+  body:
+    type: json
+    data: |-
+      {
+        "provider": "{{PremiumProvider}}"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+
+        test("rejects checkout without planId", function() {
+          expect(res.status).to.equal(400);
+        });
+
+        test("returns a descriptive error", function() {
+          expect(body).to.have.property("error").that.is.a("string").and.not.empty;
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Covers the negative path of POST /api/premium/checkout when planId is omitted.
+  Preconditions: run Auth/Sign-in first.
+  Currently returns 500 instead of 400 in local dev because the Stripe provider
+  throws before the planId validation runs (see STRIPE_SECRET_KEY setup). Once
+  Stripe env vars are configured this should assert the intended 400.

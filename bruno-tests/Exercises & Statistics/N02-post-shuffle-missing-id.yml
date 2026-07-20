@@ -1,0 +1,41 @@
+info:
+  name: "N02: POST /api/exercises/shuffle (missing exerciseId - HTTP 400)"
+  type: http
+  seq: 102
+
+http:
+  method: POST
+  url: "{{URLBaseApi}}/exercises/shuffle"
+  body:
+    type: json
+    data: |-
+      {
+        "muscle": "CHEST",
+        "equipment": ["DUMBBELL"]
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+
+        test("returns 400 for missing excludeExerciseIds", function() {
+          expect(res.status).to.equal(400);
+        });
+
+        test("error response is INVALID_INPUT", function() {
+          expect(body).to.have.property("error");
+          expect(body.error).to.equal("INVALID_INPUT");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Negative case: POST /api/exercises/shuffle without required exerciseId field.
+  Should return HTTP 400 with validation error.

@@ -1,0 +1,15 @@
+info:
+  name: Iniciar sesión
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: "{{URLBaseApi}}/api/programs/session-progress/start"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

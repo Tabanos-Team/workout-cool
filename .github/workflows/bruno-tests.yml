@@ -165,4 +165,4 @@ jobs:
 
       - name: Run Bruno Tests
         #working-directory: ./bruno
-        run: bru run ./bruno --env Local
+        run: bru run ./bruno-tests --env Local

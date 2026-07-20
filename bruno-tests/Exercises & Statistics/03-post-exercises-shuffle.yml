@@ -1,0 +1,55 @@
+info:
+  name: POST /api/exercises/shuffle (sugerir ejercicio)
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{URLBaseApi}}/exercises/shuffle"
+  body:
+    type: json
+    data: |-
+      {
+        "muscle": "CHEST",
+        "equipment": ["DUMBBELL"],
+        "excludeExerciseIds": ["{{exerciseId}}"]
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: pre-request
+      code: |-
+        // Validate exerciseId exists before making request
+        if (!bru.getVar("exerciseId")) {
+          throw new Error("exerciseId not set. Run GET /api/exercises/all first to populate it.");
+        }
+
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+        const exercise = body.exercise || body;
+
+
+        test("stores suggested exercise ID", function() {
+          bru.setVar("suggestedExerciseId", exercise.id);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Suggest/shuffle an exercise to replace the current one.
+  
+  Request body:
+  - exerciseId: The exercise to replace
+  - muscleGroups: Array of muscle groups to filter suggestions by
+  - difficulty: Optional difficulty level (beginner|intermediate|advanced)
+  
+  Returns a similar exercise that targets the same muscle groups.
+  Useful for workout variety without changing the program's focus.
+  
+  Precondition: exerciseId must be set (from GET /api/exercises/all).

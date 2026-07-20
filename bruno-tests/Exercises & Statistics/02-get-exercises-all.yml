@@ -1,0 +1,52 @@
+info:
+  name: GET /api/exercises/all (catálogo completo)
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{URLBaseApi}}/exercises/all?limit=10"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+        
+        // API returns { data: [...], pagination: {...} }
+        const exercises = body.data || body;
+
+
+        test("all exercises have required structure", function() {
+          if (Array.isArray(exercises) && exercises.length > 0) {
+            exercises.forEach((exercise, index) => {
+              expect(exercise).to.have.property("id");
+              expect(exercise).to.have.property("name");
+              expect(exercise).to.be.an("object");
+            });
+          }
+        });
+
+        test("stores first exercise ID for statistics endpoints", function() {
+          if (Array.isArray(exercises) && exercises.length > 0) {
+            bru.setVar("exerciseId", exercises[0].id);
+          }
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Get the complete exercise catalog without any filters.
+  Returns all exercises available in the system.
+  
+  This is useful for:
+  - Populating dropdowns/selectors
+  - Loading entire catalog for offline use
+  - Testing pagination with limit/offset
+  
+  The first exerciseId is stored in a variable for use in the statistics endpoints.

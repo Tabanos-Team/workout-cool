@@ -1,0 +1,49 @@
+info:
+  name: Create Checkout - Authenticated
+  type: http
+  seq: 5
+  tags:
+    - premium-billing
+    - authenticated
+
+http:
+  method: POST
+  url: "{{URLBaseApi}}/premium/checkout"
+  body:
+    type: json
+    data: |-
+      {
+        "planId": "{{PremiumPlanId}}",
+        "provider": "{{PremiumProvider}}"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+
+        test("returns a JSON checkout result", function() {
+          expect(body).to.be.an("object");
+          expect(body).to.have.property("success").that.is.a("boolean");
+        });
+
+        test("successful checkout returns a URL, failed checkout returns an error", function() {
+          if (body.success) {
+            expect(res.status).to.equal(200);
+            expect(body.checkoutUrl || body.url).to.be.a("string").and.not.empty;
+          } else {
+            expect(body.error).to.be.a("string").and.not.empty;
+          }
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Covers POST /api/premium/checkout.
+  Preconditions: run Auth/Sign-in, then Get Premium Plans - LATAM so PremiumPlanId is populated.

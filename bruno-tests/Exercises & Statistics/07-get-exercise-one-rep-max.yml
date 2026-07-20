@@ -1,0 +1,85 @@
+info:
+  name: GET /api/exercises/:id/statistics/one-rep-max
+  type: http
+  seq: 7
+
+http:
+  method: GET
+  url: "{{URLBaseApi}}/exercises/{{exerciseId}}/statistics/one-rep-max"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: pre-request
+      code: |-
+        if (!bru.getVar("exerciseId")) {
+          throw new Error("exerciseId not set. Run GET /api/exercises/all first.");
+        }
+
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+
+        
+
+        test("formula is valid", function() {
+          if (body.formula !== undefined) {
+            expect(["Epley", "Brzycki", "Lombardi"]).to.include(body.formula);
+          }
+        });
+
+        test("1RM is greater than base weight", function() {
+          if (body.estimatedOneRepMax !== undefined && body.baseWeight !== undefined) {
+            expect(body.estimatedOneRepMax).to.be.greaterThanOrEqual(body.baseWeight);
+          }
+        });
+
+        test("1RM calculation is reasonable", function() {
+          if (body.estimatedOneRepMax !== undefined && body.baseWeight !== undefined && body.baseReps !== undefined) {
+            const weight = body.baseWeight;
+            const reps = body.baseReps;
+            
+            // Epley formula: 1RM = weight * (1 + reps/30)
+            const epley = weight * (1 + reps / 30);
+            
+            // Allow 10% variance for different formulas
+            const tolerance = epley * 0.10;
+            expect(body.estimatedOneRepMax).to.be.within(epley - tolerance, epley + tolerance);
+          }
+        });
+
+        test("base reps is at least 1", function() {
+          if (body.baseReps !== undefined) {
+            expect(body.baseReps).to.be.greaterThanOrEqual(1);
+            expect(body.baseReps).to.be.lessThan(100);
+          }
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Get estimated 1-rep max (1RM) for an exercise.
+  
+  1RM is the maximum weight a person can lift for a single repetition.
+  
+  Formulas supported:
+  - Epley:   1RM = weight × (1 + reps/30)
+  - Brzycki: 1RM = weight × 36 / (37 - reps)
+  - Lombardi: 1RM = weight × reps^0.1
+  
+  Returns:
+  - estimatedOneRepMax: Calculated 1RM
+  - formula: Which formula was used
+  - baseWeight: Weight of the set used for calculation
+  - baseReps: Reps of the set used for calculation
+  
+  Useful for:
+  - Tracking strength gains
+  - Powerlifting programs
+  - Understanding max effort capability
+  
+  Authentication required.

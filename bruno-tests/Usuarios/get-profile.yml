@@ -1,0 +1,34 @@
+info:
+  name: get-profile
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{URLBaseApi}}/user/profile"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+
+        test("returns 200", function() {
+          expect(res.status).to.equal(200);
+        });
+
+        test("returns the authenticated user's profile", function() {
+          expect(body).to.have.property("id").that.is.a("string");
+          expect(body).to.have.property("email").that.is.a("string");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Covers GET /api/user/profile.
+  Preconditions: run Auth/Sign-in in the same Bruno execution first.

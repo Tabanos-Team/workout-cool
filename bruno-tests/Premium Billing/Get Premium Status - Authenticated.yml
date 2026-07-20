@@ -1,0 +1,39 @@
+info:
+  name: Get Premium Status - Authenticated
+  type: http
+  seq: 7
+  tags:
+    - premium-billing
+    - authenticated
+
+http:
+  method: GET
+  url: "{{URLBaseApi}}/premium/status"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+
+        test("authenticated premium status returns 200", function() {
+          expect(res.status).to.equal(200);
+        });
+
+        test("returns premium status contract", function() {
+          expect(body).to.have.property("isPremium").that.is.a("boolean");
+          expect(body).to.have.property("subscriptions").that.is.an("object");
+          expect(body.subscriptions).to.include.keys(["hasRevenueCat", "hasStripe", "count"]);
+          expect(body).to.have.property("currentSubscription");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Covers GET /api/premium/status with an authenticated Better Auth session.
+  Run Auth/Sign-in in the same Bruno execution before this request.

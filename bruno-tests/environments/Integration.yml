@@ -1,0 +1,16 @@
+name: Integration
+variables:
+  - name: URLBase
+    value: http://127.0.0.1:3101
+  - name: URLBaseApi
+    value: http://127.0.0.1:3101/api
+  - name: PremiumProvider
+    value: stripe
+  - name: PremiumRegion
+    value: LATAM
+  - name: PremiumTimezone
+    value: America/Lima
+  - name: PremiumPlanId
+    value: ""
+  - name: BillingReturnUrl
+    value: http://127.0.0.1:3101/es/premium

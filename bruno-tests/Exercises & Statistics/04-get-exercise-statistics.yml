@@ -1,0 +1,57 @@
+info:
+  name: GET /api/exercises/:id/statistics (general)
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{URLBaseApi}}/exercises/{{exerciseId}}/statistics"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: pre-request
+      code: |-
+        if (!bru.getVar("exerciseId")) {
+          throw new Error("exerciseId not set. Run GET /api/exercises/all first.");
+        }
+
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+
+
+        test("statistics are non-negative", function() {
+          if (body.totalReps !== undefined) expect(body.totalReps).to.be.greaterThanOrEqual(0);
+          if (body.totalSets !== undefined) expect(body.totalSets).to.be.greaterThanOrEqual(0);
+          if (body.totalVolume !== undefined) expect(body.totalVolume).to.be.greaterThanOrEqual(0);
+        });
+
+        test("contains average weight if sets exist", function() {
+          if (body.totalSets > 0) {
+            expect(body).to.have.property("avgWeight");
+            expect(body.avgWeight).to.be.a("number");
+            expect(body.avgWeight).to.be.greaterThanOrEqual(0);
+          }
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Get general statistics for an exercise.
+  
+  Returns overall metrics:
+  - totalReps: Total reps performed
+  - totalSets: Total sets completed
+  - totalVolume: Total volume (weight × reps × sets)
+  - avgWeight: Average weight used
+  - maxWeight: Maximum weight lifted
+  - minWeight: Minimum weight lifted
+  
+  Authentication required (session/cookie).
+  
+  Precondition: exerciseId must be set.
