@@ -1,7 +1,10 @@
 name: Performance Testing
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [christian]
+  pull_request:
+    branches: [christian]
 
 jobs:
   performance-test:
