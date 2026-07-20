@@ -16,6 +16,7 @@
 | **Oscar Raul Chilo Huillca** | Pruebas de integración y seguridad para billing guards, control de accesos anónimos y estadísticas Premium (Issue #66). | `100%` |
 | **Jeremy Jeison Cruz Gallegos** | Diseño y ejecución de pruebas de extremo a extremo (E2E) con Playwright para flujos de registro, sesiones y finalización de entrenamiento. | `100%` |
 | **Pedro Luis Christian Zapana Romero** | Ampliación de la cobertura de pruebas unitarias (Vitest + jsdom), análisis de cobertura (Coverage) y aseguramiento de calidad. | `100%` |
+| **Max Edu Ramirez Ccahuana** | Ampliación de la cobertura de pruebas en Bruno (Usuarios + Exercises & Statistics), implementación de workflow en Bruno con Github Actions. | `75%` |
 
 ### 1.2 Accesos de Revisión
 Se ha otorgado acceso de colaborador y permisos de lectura/revisión en el repositorio al docente:
