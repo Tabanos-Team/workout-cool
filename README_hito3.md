@@ -1,4 +1,3 @@
-
 # CURSO: PRUEBAS DE SOFTWARE
 ## HITO 3 – TRABAJO FINAL (ENTREGA FINAL)
 ### Proyecto: Workout Cool - Plataforma de Coaching Fitness
@@ -16,7 +15,8 @@
 | **Oscar Raul Chilo Huillca** | Pruebas de integración y seguridad para billing guards, control de accesos anónimos y estadísticas Premium (Issue #66). | `100%` |
 | **Jeremy Jeison Cruz Gallegos** | Diseño y ejecución de pruebas de extremo a extremo (E2E) con Playwright para flujos de registro, sesiones y finalización de entrenamiento. | `100%` |
 | **Pedro Luis Christian Zapana Romero** | Ampliación de la cobertura de pruebas unitarias (Vitest + jsdom), análisis de cobertura (Coverage) y aseguramiento de calidad. | `100%` |
-| **Max Edu Ramirez Ccahuana** | Ampliación de la cobertura de pruebas en Bruno (Usuarios + Exercises & Statistics), implementación de workflow en Bruno con Github Actions. | `75%` |
+| **Max Edu Ramirez Ccahuana** | Diseño de pruebas de rendimiento con k6, simulación de carga progresiva y análisis de métricas de respuesta. | `95%` |
+| **Edgar Raul Almanza Mamani** | Sin participación en las actividades del Hito 3. | `0%` |
 
 ### 1.2 Accesos de Revisión
 Se ha otorgado acceso de colaborador y permisos de lectura/revisión en el repositorio al docente:
@@ -33,7 +33,7 @@ A continuación se detallan las URLs correspondientes a cada uno de los artefact
 | **Repositorio GitHub** | [GitHub - Tabanos-Team/workout-cool](https://github.com/Tabanos-Team/workout-cool) | Repositorio principal con el código fuente del proyecto, configuración de pruebas en Vitest/Playwright y workflows. |
 | **Entorno QA Vercel** | [Workout Cool - QA Vercel](https://workout-cool-ten.vercel.app/) | Entorno de control de calidad desplegado y conectado a base de datos PostgreSQL en la nube (Neon). |
 | **GitHub Wiki** | [Wiki de Pruebas - Workout Cool](https://github.com/Tabanos-Team/workout-cool/wiki) | Documentación completa de los planes de pruebas de integración, cobertura de endpoints y especificaciones. |
-| **GitHub Pages** | [Reportes de Cobertura](https://tabanos-team.github.io/workout-cool/) | Sitio estático que aloja los reportes interactivos de cobertura de código generados por Vitest. |
+| **Reporte de Cobertura** | [Wiki - Reportes de Cobertura](https://github.com/Tabanos-Team/workout-cool/wiki/Tabanos%E2%80%90Team-workout%E2%80%90cool-wiki-_newInforme-de-pruebas-de-integraci%C3%B3n,-aceptaci%C3%B3n-y--e2e) | Enlace directo al informe de pruebas de integración, aceptación, E2E y cobertura detallado en la Wiki. |
 | **GitHub Actions** | [Workflow de CI/CD - Workout Cool](https://github.com/Tabanos-Team/workout-cool/actions) | Pipelines automatizados en GitHub Actions para validar lint, unit, integración, E2E y build. |
 
 ---
@@ -62,3 +62,4 @@ Se automatizó todo el ciclo de validación de calidad en el archivo `.github/wo
 - **Job `e2e`:** Levanta la base de datos y ejecuta la suite completa de Playwright en navegadores.
 - **Job `build`:** Valida la compilación limpia del proyecto Next.js.
 - **CD Vercel:** Despliegue automático de la rama principal al entorno web QA compartido.
+
