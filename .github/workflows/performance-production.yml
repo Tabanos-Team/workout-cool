@@ -35,6 +35,8 @@ jobs:
       NEXT_PUBLIC_APP_URL: http://localhost:3000
       NODE_ENV: production
       BASE_URL: http://localhost:3000/api
+      REVENUECAT_SECRET_KEY: "mock_revenuecat_secret_key"
+      REVENUECAT_API_KEY: "mock_revenuecat_api_key"
 
     steps:
       - name: Checkout repository
