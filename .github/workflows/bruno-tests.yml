@@ -164,5 +164,7 @@ jobs:
         run: npm install -g @usebruno/cli
 
       - name: Run Bruno Tests
-        #working-directory: ./bruno
-        run: bru run ./bruno-tests --env Local
+        uses: usebruno/bruno-cli-action@v1
+        with:
+          command: 'run --env Local' # Or 'run' to execute without specific env
+          working-directory: './bruno-tests'
