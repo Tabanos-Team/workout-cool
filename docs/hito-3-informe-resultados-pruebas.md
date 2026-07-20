@@ -454,7 +454,7 @@ Resumen numerico automatizado:
 
 ## 12. Pruebas de rendimiento
 
-Las pruebas de rendimiento se realizaron con Grafana k6 sobre la versión desplegada del sistema Workout Cool en Vercel (https://workout-cool-ten.vercel.app). El objetivo fue verificar el comportamiento de los principales servicios REST bajo diferentes niveles de concurrencia, evaluando tiempos de respuesta, porcentaje de errores y estabilidad del sistema.
+Las pruebas de rendimiento se realizaron con Grafana k6. El objetivo fue verificar el comportamiento de los principales servicios REST bajo diferentes niveles de concurrencia, evaluando tiempos de respuesta, porcentaje de errores y estabilidad del sistema.
 
 Los escenarios implementados siguieron una estrategia incremental compuesta por Smoke, Load, Stress y Spike, permitiendo observar el comportamiento del sistema desde una carga mínima hasta un incremento abrupto de usuarios concurrentes. Durante las pruebas se evaluaron los servicios de autenticación, consulta de perfil, gestión de preferencias y sincronización de sesiones de entrenamiento, por ser las funcionalidades críticas del sistema.
 
