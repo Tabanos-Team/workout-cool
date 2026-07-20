@@ -66,6 +66,7 @@ const config = [
       "src/utils/externalLinkOpener.js",
       "src/utils/browserEscape.js",
       "public/sw.js",
+      "scripts/k6-performance.js",
     ],
     plugins: {
       "react-hooks": fixupPluginRules(reactHooks),
