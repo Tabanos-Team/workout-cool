@@ -11,80 +11,24 @@ jobs:
     name: Run k6 Performance Tests
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_DB: workoutcool
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     env:
-      DATABASE_URL: postgresql://postgres:password@localhost:5432/workoutcool?schema=public
-      BETTER_AUTH_URL: http://localhost:3000
-      BETTER_AUTH_SECRET: "mock_better_auth_secret_key_long_enough_32_characters"
-      GOOGLE_CLIENT_ID: "mock-client-id"
-      GOOGLE_CLIENT_SECRET: "mock-client-secret"
-      NEXT_PUBLIC_APP_URL: http://localhost:3000
-      NODE_ENV: production
-      BASE_URL: http://localhost:3000/api
-      REVENUECAT_SECRET_KEY: "mock_revenuecat_secret_key"
-      REVENUECAT_API_KEY: "mock_revenuecat_api_key"
-      STRIPE_SECRET_KEY: "sk_test_mock_stripe_secret_key"
-      STRIPE_WEBHOOK_SECRET: "whsec_mock_stripe_webhook_secret"
+      BASE_URL: https://workout-cool-ten.vercel.app/api
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          run_install: false
-
-      - name: Setup Node with pnpm cache
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: "pnpm"
-
-      - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
-
-      - name: Generate Prisma client
-        run: pnpm prisma generate
-
-      - name: Setup database schema
-        run: pnpm prisma db push
-
-      - name: Seed database exercises
-        run: pnpm run db:seed
-
-      - name: Seed database plans
-        run: pnpm run db:seed-plans
-
-      - name: Build Next.js application
-        run: pnpm run build
-
-      - name: Start Next.js server in background
-        run: pnpm run start &
-
-      - name: Wait for Next.js server to be ready
-        run: npx wait-on http://localhost:3000/api/exercises/all --timeout 60000
-
       - name: Setup k6
         uses: grafana/setup-k6-action@v1
 
+      - name: Verify Vercel deployment is reachable
+        run: |
+          curl -sf --max-time 30 "${{ env.BASE_URL }}/exercises/all" > /dev/null || \
+            (echo "::error::No se pudo alcanzar ${{ env.BASE_URL }}/exercises/all -- Vercel puede estar caído o el endpoint cambió." && exit 1)
+
       - name: Run k6 performance test
         run: |
-          k6 run -e RUN_ID=${{ github.run_id }} scripts/k6-performance.js
+          k6 run -e RUN_ID=${{ github.run_id }} -e BASE_URL="${{ env.BASE_URL }}" scripts/k6-performance.js
 
       - name: Upload performance report artifact
         if: always()
@@ -97,6 +41,7 @@ jobs:
         if: always()
         run: |
           echo "### Resultados de Pruebas de Rendimiento (k6)" >> $GITHUB_STEP_SUMMARY
+          echo "Ejecutado contra: \`${{ env.BASE_URL }}\`" >> $GITHUB_STEP_SUMMARY
           if [ -f summary-${{ github.run_id }}.json ]; then
             echo "El reporte de k6 se generó exitosamente." >> $GITHUB_STEP_SUMMARY
             echo '```json' >> $GITHUB_STEP_SUMMARY
