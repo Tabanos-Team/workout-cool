@@ -7,12 +7,16 @@ import { Avatar, AvatarImage, AvatarFallback } from "./avatar";
 describe("Pruebas Unitarias - Componente Avatar", () => {
 
   beforeEach(() => {
-    // Hack para entornos virtuales (JSDOM): Le decimos a la imagen global que simule cargarse de inmediato
-    // Esto evita que Radix oculte la etiqueta de la imagen asumiendo un fallo de red.
+
     Object.defineProperty(global.Image.prototype, "src", {
       set(src) {
         if (src) {
+          // Mientras "carga": complete=false, como en un navegador real
+          Object.defineProperty(this, "complete", { value: false, configurable: true });
           setTimeout(() => {
+            // Al "terminar de cargar": complete=true y naturalWidth>0
+            Object.defineProperty(this, "complete", { value: true, configurable: true });
+            Object.defineProperty(this, "naturalWidth", { value: 1, configurable: true });
             fireEvent(this, new Event("load"));
           }, 0);
         }
