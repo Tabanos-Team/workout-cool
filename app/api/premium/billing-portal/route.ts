@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { PremiumManager } from "@/shared/lib/premium/premium.manager";
-import { serverRequiredUser } from "@/entities/user/model/get-server-session-user";
+import { serverAuth } from "@/entities/user/model/get-server-session-user";
 
 /**
  * POST /api/premium/billing-portal
@@ -11,7 +11,11 @@ import { serverRequiredUser } from "@/entities/user/model/get-server-session-use
  */
 export async function POST(request: NextRequest) {
   try {
-    const user = await serverRequiredUser();
+    // Validar que el usuario tenga sesion activa
+    const user = await serverAuth();
+    if (!user) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
     const { returnUrl, provider = "stripe" } = await request.json();
 
     const result = await PremiumManager.createBillingPortal(user.id, provider, returnUrl);
