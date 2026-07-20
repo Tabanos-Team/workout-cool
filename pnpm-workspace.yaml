@@ -9,3 +9,6 @@ allowBuilds:
   prisma: true
   sharp: true
   unrs-resolver: true
+
+overrides:
+  prettier: ^3.4.2

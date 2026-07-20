@@ -88,6 +88,11 @@ jobs:
       - name: Setup k6
         uses: grafana/setup-k6-action@v1
 
+      - name: Verify Vercel deployment is reachable
+        run: |
+          curl -sf --max-time 30 "${{ env.BASE_URL }}/exercises/all" > /dev/null || \
+            (echo "::error::No se pudo alcanzar ${{ env.BASE_URL }}/exercises/all -- Vercel puede estar caído o el endpoint cambió." && exit 1)
+
       - name: Run k6 performance test
         run: |
           k6 run -e RUN_ID=${{ github.run_id }} scripts/k6-performance.js
@@ -103,6 +108,7 @@ jobs:
         if: always()
         run: |
           echo "### Resultados de Pruebas de Rendimiento (k6)" >> $GITHUB_STEP_SUMMARY
+          echo "Ejecutado contra: \`${{ env.BASE_URL }}\`" >> $GITHUB_STEP_SUMMARY
           if [ -f summary-${{ github.run_id }}.json ]; then
             echo "El reporte de k6 se generó exitosamente." >> $GITHUB_STEP_SUMMARY
             echo '```json' >> $GITHUB_STEP_SUMMARY
