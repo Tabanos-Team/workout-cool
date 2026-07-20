@@ -2,10 +2,12 @@ name: Performance Testing
 
 on:
   push:
+    branches: [main]
     branches: [christian]
   pull_request:
+    branches: [main]
     branches: [christian]
-    
+
   workflow_dispatch:
 
 jobs:
