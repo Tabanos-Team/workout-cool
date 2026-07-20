@@ -452,7 +452,75 @@ Resumen numerico automatizado:
 | E2E Programs deploy | 4 | 4 | 0 | 100% |
 | Total automatizado destacado para Programs | 16 | 16 | 0 | 100% |
 
-## 12. Incidentes encontrados
+##12. Pruebas de rendimiento
+
+Las pruebas de rendimiento se realizaron con Grafana k6 sobre la versión desplegada del sistema Workout Cool en Vercel (https://workout-cool-ten.vercel.app). El objetivo fue verificar el comportamiento de los principales servicios REST bajo diferentes niveles de concurrencia, evaluando tiempos de respuesta, porcentaje de errores y estabilidad del sistema.
+
+Los escenarios implementados siguieron una estrategia incremental compuesta por Smoke, Load, Stress y Spike, permitiendo observar el comportamiento del sistema desde una carga mínima hasta un incremento abrupto de usuarios concurrentes. Durante las pruebas se evaluaron los servicios de autenticación, consulta de perfil, gestión de preferencias y sincronización de sesiones de entrenamiento, por ser las funcionalidades críticas del sistema.
+
+Los umbrales de aceptación fueron definidos tomando como referencia los criterios de percepción del usuario propuestos por Nielsen, la metodología Apdex para evaluación del rendimiento de aplicaciones y las recomendaciones ampliamente utilizadas para APIs REST, complementadas con un proceso de calibración basado en el comportamiento real del sistema durante las pruebas preliminares. De esta forma, los umbrales representan valores alcanzables por la arquitectura desplegada sin dejar de detectar regresiones de rendimiento.
+
+###12.1 Escenarios ejecutados
+
+| Escenario | Configuración de la carga | Objetivo |
+|-----------|---------------------------|----------|
+| Smoke | 1 usuario virtual (VU) durante 30 s | Verificar el funcionamiento básico del sistema y establecer el tiempo de respuesta base (*baseline*) sin carga significativa. |
+| Load | 20 usuarios virtuales (VUs) durante 2 min | Evaluar el comportamiento del sistema bajo una carga representativa de operación normal. |
+| Stress | Hasta 50 usuarios virtuales (VUs) durante 3 min | Analizar la degradación progresiva del rendimiento al incrementar la carga de usuarios concurrentes e identificar el punto en el que el servicio comienza a deteriorarse. |
+| Spike | Hasta 100 usuarios virtuales (VUs) durante 40 s | Evaluar la capacidad del sistema para responder ante incrementos súbitos de usuarios concurrentes y medir su estabilidad durante picos de demanda. |
+
+###12.2 Umbrales de aceptación
+
+Los umbrales utilizados durante la ejecución fueron los siguientes.
+
+Métrica	Umbral
+
+| Métrica | Umbral de aceptación |
+|---------|---------------------:|
+| HTTP Requests fallidas | < 1 % |
+| Tiempo de respuesta HTTP (p95) | < 700 ms |
+| Tiempo de respuesta HTTP (p99) | < 1200 ms |
+| Inicio de sesión (p95) | < 400 ms |
+| Inicio de sesión (p99) | < 800 ms |
+| Perfil de usuario (p95) | < 300 ms |
+| Perfil de usuario (p99) | < 600 ms |
+| Preferencias (GET) (p95) | < 300 ms |
+| Preferencias (PUT) (p95) | < 400 ms |
+| Sincronización de entrenamiento (p95) | < 700 ms |
+| Sincronización de entrenamiento (p99) | < 1200 ms |
+
+###12.3 Resultados obtenidos
+
+La ejecución completa de la batería de pruebas mostró que el sistema mantuvo un comportamiento estable durante los cuatro escenarios de carga. No se registraron errores HTTP en las operaciones evaluadas y todos los umbrales definidos fueron satisfechos.
+
+| Métrica | Smoke | Load | Stress | Spike | Estado |
+|---------|:-----:|:----:|:------:|:-----:|:------:|
+| Tiempo de respuesta HTTP (p95) | 339 ms | 387 ms | 382 ms | 373 ms | Aprobado |
+| Tiempo de respuesta HTTP (p99) | 382 ms | 416 ms | 406 ms | 400 ms | Aprobado |
+| Perfil de usuario (p95) | 241 ms | 273 ms | 259 ms | 261 ms | Aprobado |
+| Perfil de usuario (p99) | 241 ms | 397 ms | 314 ms | 291 ms | Aprobado |
+| Preferencias (GET) (p95) | 261 ms | 267 ms | 256 ms | 257 ms | Aprobado |
+| Preferencias (PUT) (p95) | 250 ms | 269 ms | 260 ms | 256 ms | Aprobado |
+| Sincronización de entrenamiento (p95) | 382 ms | 401 ms | 401 ms | 393 ms | Aprobado |
+| Sincronización de entrenamiento (p99) | 391 ms | 423 ms | 431 ms | 411 ms | Aprobado |
+
+###12.4 Evaluación
+
+Los resultados obtenidos indican que el sistema mantiene tiempos de respuesta inferiores a 450 ms incluso durante escenarios de estrés y picos de carga, manteniéndose dentro de los límites definidos para las operaciones críticas. Asimismo, no se observaron incrementos significativos de latencia entre los escenarios de Load, Stress y Spike, lo que evidencia un comportamiento estable de la aplicación frente al incremento de usuarios concurrentes.
+
+Durante las primeras ejecuciones se identificaron respuestas HTTP 429 (Too Many Requests) asociadas al mecanismo de protección del servicio de autenticación y errores derivados del uso de identificadores de ejercicios inexistentes en las pruebas sintéticas. Una vez corregida la estrategia de creación de usuarios de prueba y empleando identificadores válidos de ejercicios, las pruebas finales finalizaron sin errores funcionales, cumpliéndose el 100 % de los umbrales establecidos.
+
+Los resultados permiten concluir que la arquitectura desplegada de Workout Cool presenta un nivel de rendimiento adecuado para la carga evaluada, manteniendo tiempos de respuesta consistentes y sin degradaciones apreciables entre escenarios, lo que constituye un indicador favorable de la calidad del sistema desde la perspectiva del atributo de rendimiento.
+
+###12.5 Evidencia
+
+<img width="684" height="498" alt="image" src="https://github.com/user-attachments/assets/e8bd3323-6820-40a0-bc94-1b1bebe300ba" />
+<img width="683" height="528" alt="image" src="https://github.com/user-attachments/assets/f5c85021-20ee-4773-b081-278087d65413" />
+<img width="680" height="560" alt="image" src="https://github.com/user-attachments/assets/313a3bc5-9957-4bff-95cb-320fa018c15c" />
+
+Figura 1. Resumen de ejecución de k6 mostrando el cumplimiento de los umbrales de rendimiento y las métricas p95 y p99 obtenidas para cada escenario de carga.
+
+## 13. Incidentes encontrados
 
 | ID | Descripción | Severidad | Estado | Acción tomada |
 |----|-------------|-----------|--------|---------------|
@@ -465,7 +533,7 @@ Resumen numerico automatizado:
 | INC-07 | Hydration mismatch en `Header` durante E2E público | Baja | Pendiente | Revisar render inicial de sesión para que SSR y cliente no alternen login/logout |
 | INC-08 | Checkout premium sin autenticación responde HTTP 500 | Media | Pendiente | Ajustar endpoint para devolver 401/403 si el usuario no está autenticado |
 
-## 13. Reporte de discrepancias
+## 14. Reporte de discrepancias
 
 | ID | Resultado esperado | Resultado real | Severidad | Acción tomada | Estado |
 |----|--------------------|----------------|-----------|--------------|--------|
@@ -477,7 +545,7 @@ Resumen numerico automatizado:
 | DISC-06 | UI pública debe hidratar sin diferencias SSR/cliente | Header alterna login/logout durante hidratación | Baja | Registrar hallazgo para corrección posterior | Pendiente |
 | DISC-07 | Checkout sin sesión debería rechazar por autenticación | Endpoint responde 500 controlado | Media | Registrar mejora para convertir a 401/403 | Pendiente |
 
-## 14. Conclusiones
+## 15. Conclusiones
 
 1. El proyecto tiene una base sólida de pruebas unitarias con Vitest y coverage V8.
 2. La suite de integración HITO 3 valida Auth/User, Workout Sessions, Exercises, Programs y Premium Status.
@@ -487,7 +555,7 @@ Resumen numerico automatizado:
 6. Playwright quedó instalado y ejecutado correctamente para smoke tests públicos y Programs, con resultado `26 passed`.
 7. Para cerrar HITO 3 con mayor solidez, se recomienda ampliar Playwright a flujos autenticados y versionar colecciones Postman.
 
-## 15. Recomendaciones
+## 16. Recomendaciones
 
 | Prioridad | Recomendación | Motivo |
 |-----------|---------------|--------|
@@ -499,9 +567,9 @@ Resumen numerico automatizado:
 | Media | Usar prefijos de datos `hito3-` en pruebas | Facilita limpieza |
 | Baja | Agregar pruebas de tools públicos | Mejora cobertura funcional no autenticada |
 
-## 16. Anexos
+## 17. Anexos
 
-### 16.1 Links
+### 17.1 Links
 
 | Recurso | URL |
 |---------|-----|
@@ -512,7 +580,7 @@ Resumen numerico automatizado:
 | Coverage HTML | `coverage/index.html` local o artifact CI |
 | Playwright Report | `playwright-report/index.html` local o artifact CI |
 
-### 16.2 Capturas pendientes
+### 17.2 Capturas pendientes
 
 | Evidencia | Estado |
 |-----------|--------|
@@ -524,7 +592,7 @@ Resumen numerico automatizado:
 | Postman | Pendiente |
 | E2E | Aprobado, adjuntar captura/reporte `26 passed` |
 
-### 16.3 Archivos relacionados
+### 17.3 Archivos relacionados
 
 | Archivo | Uso |
 |---------|-----|
@@ -541,7 +609,7 @@ Resumen numerico automatizado:
 | `playwright.config.ts` | Configuración E2E Playwright |
 | `e2e/*.spec.ts` | Smoke tests E2E |
 
-## 17. Estado final del informe
+## 18. Estado final del informe
 
 | Área | Estado |
 |------|--------|
