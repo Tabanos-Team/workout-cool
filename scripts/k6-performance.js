@@ -8,54 +8,6 @@ import { Trend, Rate, Counter } from "k6/metrics";
 //
 // Proyecto:  Workout Cool
 // URL:       https://workout-cool-ten.vercel.app
-//
-// Objetivo:
-//   Evaluar el atributo de calidad "Rendimiento"
-//   (ISO/IEC 25010) mediante pruebas de sistema sobre
-//   la aplicacion desplegada en Vercel.
-//
-// Cambios respecto a v1
-// ------------------------------------------------------
-// [C-1] Deteccion de 401: si la sesion expira durante la
-//       prueba, el VU fuerza re-login en la proxima
-//       iteracion en lugar de seguir enviando cookies
-//       invalidas sin darse cuenta.
-//
-// [C-2] Login medido bajo carga real: cada VU hace su
-//       propio login en la primera iteracion (default),
-//       de modo que loginDuration refleja la latencia
-//       real bajo concurrencia, no solo los 20 logins
-//       secuenciales del setup.
-//
-// [A-1] stress y spike usan ramping-vus para introducir
-//       rampas de carga controladas y eliminar picos de
-//       conexion TCP artificiales.
-//
-// [A-2] Thresholds reales por escenario (con assertions),
-//       con umbrales diferenciados: smoke mas estricto,
-//       stress/spike mas permisivos.
-//
-// [A-3] preferences_duration separada en pref_get_duration
-//       y pref_update_duration (GET y PUT tienen perfiles
-//       de latencia distintos y no deben mezclarse).
-//       El payload de PUT varia entre iteraciones para
-//       evitar optimizaciones de idempotencia del servidor.
-//
-// [A-4] Think-time realista: sleep variable (1-3 s) entre
-//       cada paso, simulando comportamiento de usuario real.
-//
-// [M-2] uniqueId usa Math.random() en lugar de Date.now()
-//       para eliminar colisiones de PK en stress/spike.
-//
-// [M-3] Thresholds activos sobre login_errors, sync_errors,
-//       profile_errors y preferences_errors.
-//
-// [M-4] Nombre de summary JSON parametrizable via RUN_ID.
-//
-// [B-3] teardown() elimina las cuentas sinteticas al final.
-//
-// [B-4] EMAIL/PASSWORD sin definir eliminadas.
-// ======================================================
 
 
 // ======================================================

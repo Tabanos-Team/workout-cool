@@ -2,9 +2,9 @@ name: ci
 
 on:
   push:
-    branches: [christian]
+    branches: [main]
   pull_request:
-    branches: [christian]
+    branches: [main]
 
 env:
   CI: true
