@@ -1,9 +1,5 @@
 packages:
-<<<<<<< HEAD
-  - '.'
-=======
   - "."
->>>>>>> 7f824438dc747b740b63311e1616acad79725903
 
 allowBuilds:
   '@prisma/client': true
