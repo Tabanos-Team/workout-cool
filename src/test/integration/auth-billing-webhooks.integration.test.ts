@@ -91,9 +91,9 @@ describe("HITO 3 integration: auth, billing guards and webhook health", () => {
       }
     });
 
-    expect(checkout.response.status).toBe(500);
+    expect(checkout.response.status).toBe(401);
     expect(checkout.body.success).toBe(false);
-    expect(checkout.body.error).toBe("Failed to create checkout session");
+    expect(checkout.body.error).toBe("Unauthorized");
   });
 
   it("exposes the RevenueCat webhook health check endpoint", async () => {
