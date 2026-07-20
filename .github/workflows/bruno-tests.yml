@@ -15,14 +15,25 @@ on:
 
 env:
   CI: true
-  BETTER_AUTH_URL: http://localhost:3000
-  DATABASE_URL: postgresql://user:password@localhost:5432/test_db
+  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/workoutcool_test
+  NEXT_PUBLIC_APP_URL: http://127.0.0.1:3000
+
+  BETTER_AUTH_SECRET: test_secret_key_32_chars_minimum
   GOOGLE_CLIENT_ID: test_client_id
   GOOGLE_CLIENT_SECRET: test_client_secret
   RESEND_API_KEY: re_test_key
-  BETTER_AUTH_SECRET: test_secret_key_32_chars_minimum
   OPENPANEL_SECRET_KEY: test_secret
   NEXT_PUBLIC_OPENPANEL_CLIENT_ID: test_client_id
+  STRIPE_SECRET_KEY: test_secret_key
+
+  BETTER_AUTH_URL: http://localhost:3000
+  #DATABASE_URL: postgresql://user:password@localhost:5432/test_db
+  #GOOGLE_CLIENT_ID: test_client_id
+  #GOOGLE_CLIENT_SECRET: test_client_secret
+  #RESEND_API_KEY: re_test_key
+  #BETTER_AUTH_SECRET: test_secret_key_32_chars_minimum
+  #OPENPANEL_SECRET_KEY: test_secret
+  #NEXT_PUBLIC_OPENPANEL_CLIENT_ID: test_client_id
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: test_client_id
   NEXT_PUBLIC_STRIPE_PRICE_MONTHLY_EU: test_price_monthly
   NEXT_PUBLIC_STRIPE_PRICE_YEARLY_EU: test_price_yearly
