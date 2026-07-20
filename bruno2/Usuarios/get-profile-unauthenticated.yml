@@ -1,0 +1,33 @@
+info:
+  name: get-profile-unauthenticated
+  type: http
+  seq: 8
+
+http:
+  method: GET
+  url: "{{URLBaseApi}}/user/profile"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+
+        test("rejects anonymous profile access", function() {
+          expect([401, 403]).to.include(res.status);
+        });
+
+        test("returns an error payload", function() {
+          expect(body).to.have.property("error").that.is.a("string").and.not.empty;
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Negative case for GET /api/user/profile: no session cookie is sent,
+  so the endpoint must reject the request instead of leaking profile data.
+  Run this request on its own or before Auth/Sign-in so no session is present.

@@ -1,0 +1,16 @@
+name: QA Vercel
+variables:
+  - name: URLBase
+    value: https://workout-cool-ten.vercel.app
+  - name: URLBaseApi
+    value: https://workout-cool-ten.vercel.app/api
+  - name: PremiumProvider
+    value: stripe
+  - name: PremiumRegion
+    value: LATAM
+  - name: PremiumTimezone
+    value: America/Lima
+  - name: PremiumPlanId
+    value: ""
+  - name: BillingReturnUrl
+    value: https://workout-cool-ten.vercel.app/es/premium

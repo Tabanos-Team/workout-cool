@@ -21,6 +21,13 @@ runtime:
           expect(res.status).to.equal(200);
         });
 
+        test("returns premium status contract", function() {
+          expect(body).to.have.property("isPremium").that.is.a("boolean");
+          expect(body).to.have.property("subscriptions").that.is.an("object");
+          expect(body.subscriptions).to.include.keys(["hasRevenueCat", "hasStripe", "count"]);
+          expect(body).to.have.property("currentSubscription");
+        });
+
 settings:
   encodeUrl: true
   timeout: 0

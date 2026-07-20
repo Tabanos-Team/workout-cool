@@ -1,0 +1,43 @@
+info:
+  name: "N03: POST /api/exercises/shuffle (invalid exerciseId - HTTP 404)"
+  type: http
+  seq: 103
+
+http:
+  method: POST
+  url: "{{URLBaseApi}}/exercises/shuffle"
+  body:
+    type: json
+    data: |-
+      {
+        "muscle": "CHEST",
+        "equipment": ["DUMBBELL"],
+        "excludeExerciseIds": ["00000000-0000-0000-0000-000000000000"]
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+
+        test("returns 404 or 500 when no alternatives found", function() {
+          expect([404, 500]).to.include(res.status);
+        });
+
+        test("error response present", function() {
+          expect(body).to.have.property("error");
+          const error = body.error || "";
+          expect(error).to.not.be.empty;
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Negative case: POST /api/exercises/shuffle with non-existent exerciseId.
+  Should return HTTP 404 with descriptive error message.

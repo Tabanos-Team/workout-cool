@@ -25,6 +25,26 @@ runtime:
       code: |-
         const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
 
+        test("returns 200", function() {
+          expect(res.status).to.equal(200);
+        });
+
+        test("returns a plans array and the requested region", function() {
+          expect(body).to.have.property("plans").that.is.an("array");
+          expect(body).to.have.property("detectedRegion", "LATAM");
+        });
+
+        test("plan payload has the premium contract when plans exist", function() {
+          if (body.plans.length === 0) {
+            return;
+          }
+
+          const plan = body.plans[0];
+          expect(plan).to.include.keys(["id", "name", "type", "priceMonthly", "priceYearly", "currency", "features"]);
+          expect(plan.type).to.equal("premium");
+          expect(plan.features).to.be.an("array");
+          expect(["EUR", "USD"]).to.include(plan.currency);
+        });
 
 settings:
   encodeUrl: true

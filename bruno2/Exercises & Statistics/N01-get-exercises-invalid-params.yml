@@ -1,0 +1,35 @@
+info:
+  name: "N01: GET /api/exercises (invalid params - HTTP 400)"
+  type: http
+  seq: 101
+
+http:
+  method: GET
+  url: "{{URLBaseApi}}/exercises?muscles=invalid_muscle&equipment=invalid_equipment"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+
+        test("returns 400 for missing required parameters", function() {
+          // Both equipment AND muscles are required - providing neither should fail
+          expect(res.status).to.equal(400);
+        });
+
+        test("returns error payload", function() {
+          expect(body).to.have.property("error");
+          const errorType = body.error || "";
+          expect(errorType).to.equal("INVALID_INPUT");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Negative case: GET /api/exercises with invalid muscle/equipment parameters.
+  Should return HTTP 400 with descriptive error message.

@@ -1,0 +1,11 @@
+info:
+  name: Premium Billing
+  type: folder
+  seq: 4
+
+request:
+  auth: inherit
+
+docs: |-
+  Integration tests for premium and billing endpoints.
+  Run Auth/Sign-in first when validating authenticated flows.

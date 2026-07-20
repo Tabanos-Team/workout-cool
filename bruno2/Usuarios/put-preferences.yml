@@ -22,6 +22,17 @@ http:
 runtime:
   scripts:
     - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+
+        test("returns 200", function() {
+          expect(res.status).to.equal(200);
+        });
+
+        test("preferences reflect the update", function() {
+          expect(body).to.have.property("fitnessLevel", "beginner");
+          expect(body).to.have.property("weeklyFrequency", 3);
+        });
 
 settings:
   encodeUrl: true

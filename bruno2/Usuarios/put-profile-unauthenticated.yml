@@ -1,0 +1,40 @@
+info:
+  name: put-profile-unauthenticated
+  type: http
+  seq: 6
+
+http:
+  method: PUT
+  url: "{{URLBaseApi}}/user/profile"
+  body:
+    type: json
+    data: |-
+      {
+        "firstName": "Anon",
+        "lastName": "User"
+      }
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+
+        test("rejects anonymous profile update", function() {
+          expect([401, 403]).to.include(res.status);
+        });
+
+        test("returns an error payload", function() {
+          expect(body).to.have.property("error").that.is.a("string").and.not.empty;
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Negative case for PUT /api/user/profile: no session cookie is sent (no "auth: inherit"),
+  so the endpoint must reject the request instead of updating an anonymous profile.
+  Run this request on its own or before Auth/Sign-in so no session is present.

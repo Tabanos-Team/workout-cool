@@ -1,0 +1,49 @@
+info:
+  name: Track Premium Discovery
+  type: http
+  seq: 1
+  tags:
+    - analytics
+    - premium
+    - smoke
+
+http:
+  method: POST
+  url: "{{URLBaseApi}}/analytics/premium"
+  body:
+    type: json
+    data: |-
+      {
+        "event": "discovery"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+
+        test("tracks discovery event", function() {
+          expect(res.status).to.equal(200);
+          expect(body).to.include({
+            event: "discovery",
+            success: true
+          });
+        });
+
+        test("maps discovery to the premium analytics event", function() {
+          expect(body.analyticsEvent).to.include({
+            name: "Premium Features Discovered",
+            channel: "premium"
+          });
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Covers POST /api/analytics/premium for the discovery event.

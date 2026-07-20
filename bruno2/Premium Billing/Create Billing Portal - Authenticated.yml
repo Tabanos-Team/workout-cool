@@ -1,0 +1,50 @@
+info:
+  name: Create Billing Portal - Authenticated
+  type: http
+  seq: 6
+  tags:
+    - premium-billing
+    - authenticated
+
+http:
+  method: POST
+  url: "{{URLBaseApi}}/premium/billing-portal"
+  body:
+    type: json
+    data: |-
+      {
+        "returnUrl": "{{BillingReturnUrl}}",
+        "provider": "{{PremiumProvider}}"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+
+        test("returns a JSON billing portal result", function() {
+          expect(body).to.be.an("object");
+          expect(body).to.have.property("success").that.is.a("boolean");
+        });
+
+        test("successful portal returns url, otherwise error explains why", function() {
+          if (body.success) {
+            expect(res.status).to.equal(200);
+            expect(body.url).to.be.a("string").and.not.empty;
+          } else {
+            expect([400, 500]).to.include(res.status);
+            expect(body.error).to.be.a("string").and.not.empty;
+          }
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Covers POST /api/premium/billing-portal.
+  Preconditions: run Auth/Sign-in. Users without a Stripe customer should receive a controlled error.

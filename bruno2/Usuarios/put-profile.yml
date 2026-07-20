@@ -21,6 +21,15 @@ runtime:
       code: |-
         const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
 
+        test("returns 200", function() {
+          expect(res.status).to.equal(200);
+        });
+
+        test("profile reflects the updated fields", function() {
+          expect(body).to.have.property("firstName", "Test1");
+          expect(body).to.have.property("lastName", "tester");
+        });
+
 settings:
   encodeUrl: true
   timeout: 0

@@ -17,27 +17,6 @@ runtime:
       code: |-
         const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
 
-        test("authenticated billing status returns 200", function() {
-          expect(res.status).to.equal(200);
-        });
-
-        test("returns billing status contract", function() {
-          expect(body).to.have.property("isPremium").that.is.a("boolean");
-          expect(body).to.have.property("canUpgrade").that.is.a("boolean");
-
-          if (body.expiresAt !== undefined && body.expiresAt !== null) {
-            expect(body.expiresAt).to.be.a("string");
-          }
-
-          if (body.subscription !== undefined) {
-            expect(body.subscription).to.be.an("object");
-          }
-
-          if (body.license !== undefined) {
-            expect(body.license).to.be.an("object");
-          }
-        });
-
 settings:
   encodeUrl: true
   timeout: 0

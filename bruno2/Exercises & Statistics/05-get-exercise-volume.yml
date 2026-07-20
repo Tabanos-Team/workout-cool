@@ -1,0 +1,72 @@
+info:
+  name: GET /api/exercises/:id/statistics/volume
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: "{{URLBaseApi}}/exercises/{{exerciseId}}/statistics/volume"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: pre-request
+      code: |-
+        if (!bru.getVar("exerciseId")) {
+          throw new Error("exerciseId not set. Run GET /api/exercises/all first.");
+        }
+
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+
+        
+
+        test("total volume is calculated correctly", function() {
+          if (body.totalVolume !== undefined) expect(body.totalVolume).to.be.greaterThanOrEqual(0);
+          if (Array.isArray(body.byDate) && body.byDate.length > 0) {
+            const sumByDate = body.byDate.reduce((sum, day) => sum + (day.volume || 0), 0);
+            if (body.totalVolume !== undefined) expect(body.totalVolume).to.equal(sumByDate);
+          }
+        });
+
+        test("volume by date is chronologically ordered", function() {
+          if (Array.isArray(body.byDate) && body.byDate.length > 0) {
+            const dates = body.byDate.map(d => new Date(d.date).getTime());
+            for (let i = 1; i < dates.length; i++) {
+              expect(dates[i]).to.be.greaterThanOrEqual(dates[i - 1]);
+            }
+          }
+        });
+
+        test("each date entry has valid structure", function() {
+          if (Array.isArray(body.byDate) && body.byDate.length > 0) {
+            body.byDate.forEach((entry, idx) => {
+              expect(entry).to.have.property("date");
+              expect(entry).to.have.property("volume");
+              expect(entry.volume).to.be.a("number");
+              expect(entry.volume).to.be.greaterThanOrEqual(0);
+            });
+          }
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Get volume statistics for an exercise.
+  
+  Volume = weight × reps × sets
+  
+  Returns:
+  - totalVolume: Total volume across all sessions
+  - byDate: Array of daily volumes
+    - date: ISO 8601 date
+    - volume: Volume for that day
+  
+  Useful for tracking workout intensity and progression.
+  
+  Authentication required.

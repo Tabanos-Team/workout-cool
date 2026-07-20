@@ -18,6 +18,14 @@ runtime:
       code: |-
         const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
 
+        test("returns 200", function() {
+          expect(res.status).to.equal(200);
+        });
+
+        test("detects LATAM from America/Lima timezone", function() {
+          expect(body).to.have.property("detectedRegion", "LATAM");
+          expect(body.plans).to.be.an("array");
+        });
 
 settings:
   encodeUrl: true

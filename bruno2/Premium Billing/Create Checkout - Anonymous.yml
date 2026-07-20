@@ -24,6 +24,10 @@ runtime:
       code: |-
         const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
 
+        test("rejects anonymous checkout attempt", function() {
+          expect([401, 403]).to.include(res.status);
+        });
+
         test("returns an error payload", function() {
           expect(body).to.have.property("error").that.is.a("string").and.not.empty;
         });

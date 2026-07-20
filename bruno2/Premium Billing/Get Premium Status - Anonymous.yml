@@ -1,0 +1,39 @@
+info:
+  name: Get Premium Status - Anonymous
+  type: http
+  seq: 3
+  tags:
+    - premium-billing
+    - auth-boundary
+
+http:
+  method: GET
+  url: "{{URLBaseApi}}/premium/status"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
+
+        test("anonymous premium status returns 200", function() {
+          expect(res.status).to.equal(200);
+        });
+
+        test("anonymous user is not premium", function() {
+          expect(body).to.include({
+            isPremium: false,
+            source: null,
+            message: "User not authenticated"
+          });
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Documents the mobile-compatible behavior of GET /api/premium/status: unauthenticated users receive a non-premium payload instead of 401.

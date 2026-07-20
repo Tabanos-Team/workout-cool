@@ -1,0 +1,49 @@
+info:
+  name: GET /api/exercises (buscar por músculos/equipamiento)
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{URLBaseApi}}/exercises?muscles=CHEST&equipment=DUMBBELL"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const body = typeof res.body === "string" ? JSON.parse(res.body || "[]") : res.body;
+
+
+        test("each exercise has required fields", function() {
+          if (body.length > 0) {
+            const exercise = body[0];
+            expect(exercise).to.have.property("id").that.is.a("string");
+            expect(exercise).to.have.property("name").that.is.a("string");
+            expect(exercise).to.have.property("muscleGroups").that.is.an("array");
+            expect(exercise).to.have.property("equipment");
+          }
+        });
+
+        test("stores first exercise ID for later use", function() {
+          if (body.length > 0) {
+            bru.setVar("exerciseId", body[0].id);
+          }
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Search exercises by muscle groups and equipment.
+  
+  Query parameters:
+  - muscles: array of muscle groups to filter by
+  - equipment: array of equipment types
+  - limit: max results (default 20)
+  - offset: pagination offset (default 0)
+  
+  This request stores the first exerciseId in a variable for use in subsequent requests.

@@ -14,6 +14,15 @@ runtime:
       code: |-
         const body = typeof res.body === "string" ? JSON.parse(res.body || "{}") : res.body;
 
+        test("returns 200", function() {
+          expect(res.status).to.equal(200);
+        });
+
+        test("returns the preferences contract", function() {
+          expect(body).to.have.property("fitnessLevel");
+          expect(body).to.have.property("equipment").that.is.an("array");
+          expect(body).to.have.property("weeklyFrequency");
+        });
 
 settings:
   encodeUrl: true
