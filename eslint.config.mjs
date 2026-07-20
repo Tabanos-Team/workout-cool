@@ -34,6 +34,7 @@ const config = [
       "**/build/**",
       "**/dist/**",
       "public/sw.js",
+      "scripts/k6-performance.js",
     ],
   },
   js.configs.recommended,
