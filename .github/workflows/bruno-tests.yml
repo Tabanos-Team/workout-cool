@@ -8,7 +8,7 @@ on:
         required: true
         default: 'bruno'
   push:
-    branches: [main]
+    branches: [bruno-workflow]
 
   pull_request:
     branches: [main]
