@@ -5,6 +5,8 @@ on:
     branches: [christian]
   pull_request:
     branches: [christian]
+    
+  workflow_dispatch:
 
 jobs:
   performance-test:
