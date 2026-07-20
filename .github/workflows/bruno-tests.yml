@@ -1,6 +1,12 @@
 name: Bruno API Tests
 
 on:
+  workflow_dispatch:
+    inputs:
+      testSuite:
+        description: 'Test suite to run'
+        required: true
+        default: 'bruno'
   push:
     branches: [main]
 
