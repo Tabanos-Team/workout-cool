@@ -12,7 +12,7 @@ on:
 jobs:
   performance-test:
     name: Run k6 Performance Tests
-    runs-on: ubuntu-latest
+    runn: scripts/k6-performance.js
 
     services:
       postgres:

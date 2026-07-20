@@ -13,6 +13,9 @@ describe("Pruebas Unitarias - Componente Avatar", () => {
       set(src) {
         if (src) {
           setTimeout(() => {
+            // Al "terminar de cargar": complete=true y naturalWidth>0
+            Object.defineProperty(this, "complete", { value: true, configurable: true });
+            Object.defineProperty(this, "naturalWidth", { value: 1, configurable: true });
             fireEvent(this, new Event("load"));
           }, 0);
         }
