@@ -452,7 +452,7 @@ Resumen numerico automatizado:
 | E2E Programs deploy | 4 | 4 | 0 | 100% |
 | Total automatizado destacado para Programs | 16 | 16 | 0 | 100% |
 
-##12. Pruebas de rendimiento
+## 12. Pruebas de rendimiento
 
 Las pruebas de rendimiento se realizaron con Grafana k6 sobre la versión desplegada del sistema Workout Cool en Vercel (https://workout-cool-ten.vercel.app). El objetivo fue verificar el comportamiento de los principales servicios REST bajo diferentes niveles de concurrencia, evaluando tiempos de respuesta, porcentaje de errores y estabilidad del sistema.
 
@@ -460,7 +460,7 @@ Los escenarios implementados siguieron una estrategia incremental compuesta por 
 
 Los umbrales de aceptación fueron definidos tomando como referencia los criterios de percepción del usuario propuestos por Nielsen, la metodología Apdex para evaluación del rendimiento de aplicaciones y las recomendaciones ampliamente utilizadas para APIs REST, complementadas con un proceso de calibración basado en el comportamiento real del sistema durante las pruebas preliminares. De esta forma, los umbrales representan valores alcanzables por la arquitectura desplegada sin dejar de detectar regresiones de rendimiento.
 
-###12.1 Escenarios ejecutados
+### 12.1 Escenarios ejecutados
 
 | Escenario | Configuración de la carga | Objetivo |
 |-----------|---------------------------|----------|
@@ -469,7 +469,7 @@ Los umbrales de aceptación fueron definidos tomando como referencia los criteri
 | Stress | Hasta 50 usuarios virtuales (VUs) durante 3 min | Analizar la degradación progresiva del rendimiento al incrementar la carga de usuarios concurrentes e identificar el punto en el que el servicio comienza a deteriorarse. |
 | Spike | Hasta 100 usuarios virtuales (VUs) durante 40 s | Evaluar la capacidad del sistema para responder ante incrementos súbitos de usuarios concurrentes y medir su estabilidad durante picos de demanda. |
 
-###12.2 Umbrales de aceptación
+### 12.2 Umbrales de aceptación
 
 Los umbrales utilizados durante la ejecución fueron los siguientes.
 
@@ -489,7 +489,7 @@ Métrica	Umbral
 | Sincronización de entrenamiento (p95) | < 700 ms |
 | Sincronización de entrenamiento (p99) | < 1200 ms |
 
-###12.3 Resultados obtenidos
+### 12.3 Resultados obtenidos
 
 La ejecución completa de la batería de pruebas mostró que el sistema mantuvo un comportamiento estable durante los cuatro escenarios de carga. No se registraron errores HTTP en las operaciones evaluadas y todos los umbrales definidos fueron satisfechos.
 
@@ -504,7 +504,7 @@ La ejecución completa de la batería de pruebas mostró que el sistema mantuvo 
 | Sincronización de entrenamiento (p95) | 382 ms | 401 ms | 401 ms | 393 ms | Aprobado |
 | Sincronización de entrenamiento (p99) | 391 ms | 423 ms | 431 ms | 411 ms | Aprobado |
 
-###12.4 Evaluación
+### 12.4 Evaluación
 
 Los resultados obtenidos indican que el sistema mantiene tiempos de respuesta inferiores a 450 ms incluso durante escenarios de estrés y picos de carga, manteniéndose dentro de los límites definidos para las operaciones críticas. Asimismo, no se observaron incrementos significativos de latencia entre los escenarios de Load, Stress y Spike, lo que evidencia un comportamiento estable de la aplicación frente al incremento de usuarios concurrentes.
 
@@ -512,7 +512,7 @@ Durante las primeras ejecuciones se identificaron respuestas HTTP 429 (Too Many 
 
 Los resultados permiten concluir que la arquitectura desplegada de Workout Cool presenta un nivel de rendimiento adecuado para la carga evaluada, manteniendo tiempos de respuesta consistentes y sin degradaciones apreciables entre escenarios, lo que constituye un indicador favorable de la calidad del sistema desde la perspectiva del atributo de rendimiento.
 
-###12.5 Evidencia
+### 12.5 Evidencia
 
 <img width="684" height="498" alt="image" src="https://github.com/user-attachments/assets/e8bd3323-6820-40a0-bc94-1b1bebe300ba" />
 <img width="683" height="528" alt="image" src="https://github.com/user-attachments/assets/f5c85021-20ee-4773-b081-278087d65413" />
