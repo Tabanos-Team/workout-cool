@@ -47,7 +47,7 @@ env:
   NEXT_PUBLIC_STRIPE_PRICE_YEARLY_RU: test_price_yearly
   NEXT_PUBLIC_STRIPE_PRICE_MONTHLY_CN: test_price_monthly
   NEXT_PUBLIC_STRIPE_PRICE_YEARLY_CN: test_price_yearly
-  NEXT_PUBLIC_APP_URL: http://localhost:3000
+  #NEXT_PUBLIC_APP_URL: http://localhost:3000
   #STRIPE_SECRET_KEY: test_secret_key
   REVENUECAT_SECRET_KEY: test_secret_key
   REVENUECAT_WEBHOOK_SECRET: test_webhook_secret
