@@ -13,7 +13,7 @@ on:
 jobs:
   performance-test:
     name: Run k6 Performance Tests
-    runs-on: ubuntu-latest
+    run: k6 run k6/k6-performance.js
 
     env:
       BASE_URL: https://workout-cool-ten.vercel.app/api
